@@ -2,8 +2,9 @@ package com.example.milfittracker.room;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.Index;
 
-@Entity(tableName = "set_goals")
+@Entity(tableName = "set_goals", indices = @Index(value = {"branch","event"}, unique = true))
 public class SetGoal {
     @PrimaryKey(autoGenerate = true)
     public int id;

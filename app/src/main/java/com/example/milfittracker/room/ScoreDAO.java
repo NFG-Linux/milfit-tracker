@@ -24,6 +24,12 @@ public interface ScoreDAO {
     @Query("SELECT * FROM scores WHERE branch = :branch AND event = :event AND date BETWEEN :fromDate AND :toDate ORDER BY date ASC")
     List<Scores> getForBranchEventBetween(String branch, String event, String fromDate, String toDate);
 
+    @Query("SELECT * FROM scores ORDER BY date DESC")
+    androidx.lifecycle.LiveData<java.util.List<com.example.milfittracker.room.Scores>> observeAll();
+
+    @Query("SELECT * FROM scores WHERE event = :event ORDER BY date DESC")
+    androidx.lifecycle.LiveData<java.util.List<com.example.milfittracker.room.Scores>> observeByEvent(String event);
+
     @Query("DELETE FROM scores")
     void clearAll();
 }

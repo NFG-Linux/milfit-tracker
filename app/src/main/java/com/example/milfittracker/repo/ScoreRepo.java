@@ -1,12 +1,12 @@
 package com.example.milfittracker.repo;
 
+import androidx.lifecycle.LiveData;
+import java.util.List;
 import com.example.milfittracker.helpers.AppExec;
 import com.example.milfittracker.helpers.Callback;
 import com.example.milfittracker.room.MilFitDB;
 import com.example.milfittracker.room.ScoreDAO;
 import com.example.milfittracker.room.Scores;
-
-import java.util.List;
 
 public class ScoreRepo {
     private final ScoreDAO scoreDAO;
@@ -41,6 +41,14 @@ public class ScoreRepo {
             List<Scores> scores = scoreDAO.getAll();
             appExec.main(() -> callback.onComplete(scores));
         });
+    }
+
+    public LiveData<List<Scores>> observeAll() {
+        return scoreDAO.observeAll();
+    }
+
+    public LiveData<List<Scores>> observeByEvent(String event) {
+        return scoreDAO.observeByEvent(event);
     }
 
     public void getForBranchEvent(String branch, String event, Callback<List<Scores>> callback) {

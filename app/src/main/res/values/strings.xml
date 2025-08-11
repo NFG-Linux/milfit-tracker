@@ -3,4 +3,10 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="take_pic">Capture</string>
+    <string name="switch_cam">Switch camera</string>
+    <string name="tFlash">Toggle flash</string>
+    <string name="last_lap_fmt">Last lap — %1$s</string>
+    <string name="last_lap_zero">Last lap — 00:00.00</string>
+    <string name="google_maps_key">AIzaSyABQ1YJvd5RjubPa9cVIZtysRr5vupaIJw</string>
 </resources>

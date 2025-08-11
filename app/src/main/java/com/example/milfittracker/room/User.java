@@ -1,7 +1,8 @@
 package com.example.milfittracker.room;
 
 import androidx.room.Entity;
-import androidx.room.Ignore;
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "users")
@@ -9,30 +10,33 @@ public class User {
     @PrimaryKey(autoGenerate = true)
     private long id;
 
-    public String name;
-    public String bDate;
-    public String gender;
+    @NonNull
+    @ColumnInfo(name = "name")
+    private String name = "";
 
-    //prob move this to AF/Space Force since they are the only ones to use multiple altitudes. Navy and Marines use < or >5000ft
-    public String altGroup;
+    // Store as ISO date string (yyyy-MM-dd)
+    @ColumnInfo(name = "birthday")
+    private String bDay;
 
-    public User() {}
+    @ColumnInfo(name = "gender")
+    private String gender;
 
-    @Ignore
-    public User(long id, String name, String bDate, String gender, String altGroup) {
-        this.id = id;
-        this.name = name;
-        this.bDate = bDate;
-        this.gender = gender;
-        this.altGroup = altGroup;
-    }
+    @ColumnInfo(name = "altitude_group")
+    private String altiGrp;
 
-    //getter/setter for id
-    public long getId() {
-        return id;
-    }
+    // --- Canonical getters/setters (Room uses these/fields) ---
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
 
-    public void setId(long id) {
-        this.id = id;
-    }
+    @NonNull public String getName() { return name; }
+    public void setName(@NonNull String name) { this.name = name; }
+
+    public String getBDay() { return bDay; }
+    public void setBDay(String bDay) { this.bDay = bDay; }
+
+    public String getGender() { return gender; }
+    public void setGender(String gender) { this.gender = gender; }
+
+    public String getAltiGrp() { return altiGrp; }
+    public void setAltiGrp(String altiGrp) { this.altiGrp = altiGrp; }
 }

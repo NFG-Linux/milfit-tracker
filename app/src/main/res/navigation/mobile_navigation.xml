@@ -3,23 +3,43 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/mobile_navigation"
-            app:startDestination="@+id/navigation_home">
+            app:startDestination="@+id/homeFragment">
 
     <fragment
-            android:id="@+id/navigation_home"
-            android:name="com.example.milfittracker.ui.home.HomeFragment"
-            android:label="@string/title_home"
-            tools:layout="@layout/fragment_home"/>
+        android:id="@+id/homeFragment"
+        android:name="com.example.milfittracker.ui.home.HomeFragment"
+        android:label="Home" />
 
     <fragment
-            android:id="@+id/navigation_dashboard"
-            android:name="com.example.milfittracker.ui.dashboard.DashboardFragment"
-            android:label="@string/title_dashboard"
-            tools:layout="@layout/fragment_dashboard"/>
+        android:id="@+id/branchFragment"
+        android:name="com.example.milfittracker.ui.home.BranchFragment"
+        android:label="Branch" >
+    </fragment>
 
     <fragment
-            android:id="@+id/navigation_notifications"
-            android:name="com.example.milfittracker.ui.notifications.NotificationsFragment"
-            android:label="@string/title_notifications"
-            tools:layout="@layout/fragment_notifications"/>
+        android:id="@+id/stopwatchFragment"
+        android:name="com.example.milfittracker.ui.stopwatch.StopwatchFragment"
+        tools:layout="@layout/fragment_stopwatch"
+        android:label="Stopwatch" />
+
+    <fragment
+        android:id="@+id/logFragment"
+        android:name="com.example.milfittracker.ui.log.LogHubFragment"
+        android:label="Log" />
+
+    <!-- You already have RunsFragment wired for Maps; we’ll navigate to it from LogHub -->
+    <fragment
+        android:id="@+id/runsFragment"
+        android:name="com.example.milfittracker.ui.log.RunsFragment"
+        android:label="Runs" />
+
+    <fragment
+        android:id="@+id/analysisFragment"
+        android:name="com.example.milfittracker.ui.dashboard.AnalysisFragment"
+        android:label="Analysis" />
+
+    <fragment
+        android:id="@+id/moreFragment"
+        android:name="com.example.milfittracker.ui.notifications.MoreFragment"
+        android:label="More" />
 </navigation>

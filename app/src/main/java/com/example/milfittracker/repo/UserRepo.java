@@ -14,6 +14,24 @@ public class UserRepo {
         this.userDAO = db.userDAO();
     }
 
+    public void hasAny(Callback<Boolean> callback) {
+        appExec.execute(() -> {
+            boolean exists = userDAO.count() > 0;
+            appExec.main(() -> {
+                if (callback != null) callback.onComplete(exists);
+            });
+        });
+    }
+
+    public void save(User user, Callback<Long> callback) {
+        appExec.execute(() -> {
+            long id = userDAO.insert(user);   // requires @Insert in UserDAO
+            appExec.main(() -> {
+                if (callback != null) callback.onComplete(id);
+            });
+        });
+    }
+
     public void getUser(Callback<User> callback) {
         appExec.execute(() -> {
             User user = userDAO.getUser();

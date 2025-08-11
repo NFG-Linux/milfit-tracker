@@ -17,6 +17,9 @@ public interface UserDAO {
     @Query("SELECT * FROM users LIMIT 1")
     User getUser();
 
+    @Query("SELECT COUNT(*) FROM users")
+    int count();
+
     @Query("DELETE FROM users")
     void clear();
 }
