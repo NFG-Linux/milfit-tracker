@@ -8,13 +8,23 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.milfittracker.ui.home.HomeFragment"
-        android:label="Home" />
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/home_to_navy"
+            app:destination="@id/navyFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/branchFragment"
         android:name="com.example.milfittracker.ui.home.BranchFragment"
         android:label="Branch" >
     </fragment>
+
+    <fragment
+        android:id="@+id/navyFragment"
+        android:name="com.example.milfittracker.ui.navy.NavyFragment"
+        android:label="Navy" />
 
     <fragment
         android:id="@+id/stopwatchFragment"
@@ -24,22 +34,22 @@
 
     <fragment
         android:id="@+id/logFragment"
-        android:name="com.example.milfittracker.ui.log.LogHubFragment"
+        android:name="com.example.milfittracker.ui.log.LogFragment"
         android:label="Log" />
 
-    <!-- You already have RunsFragment wired for Maps; we’ll navigate to it from LogHub -->
     <fragment
         android:id="@+id/runsFragment"
         android:name="com.example.milfittracker.ui.log.RunsFragment"
-        android:label="Runs" />
+        android:label="Runs"
+        tools:layout="@layout/fragment_runs" />
 
     <fragment
         android:id="@+id/analysisFragment"
-        android:name="com.example.milfittracker.ui.dashboard.AnalysisFragment"
+        android:name="com.example.milfittracker.ui.analysis.AnalysisFragment"
         android:label="Analysis" />
 
     <fragment
         android:id="@+id/moreFragment"
-        android:name="com.example.milfittracker.ui.notifications.MoreFragment"
+        android:name="com.example.milfittracker.ui.more.MoreFragment"
         android:label="More" />
 </navigation>

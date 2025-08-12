@@ -20,6 +20,9 @@ public class ScoreViewModel extends AndroidViewModel {
         allScores = repo.observeAll();
     }
 
+    public LiveData<List<Scores>> getAllLive() {
+        return repo.getAllLive(); }
+
     public LiveData<List<Scores>> getAllScores() {
         return allScores;
     }
@@ -28,7 +31,7 @@ public class ScoreViewModel extends AndroidViewModel {
         return repo.observeByEvent(event);
     }
 
-    public void insert(Scores s) {
-        repo.insert(s, id -> { /* no-op for now */ });
+    public void insert(Scores scores) {
+        repo.insert(scores, id -> { /* no-op for now */ });
     }
 }

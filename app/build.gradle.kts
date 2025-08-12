@@ -40,6 +40,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.navigation:navigation-fragment:2.6.0")
     implementation("androidx.navigation:navigation-ui:2.6.0")
+    implementation("androidx.preference:preference:1.2.1")
     implementation("androidx.activity:activity:1.8.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -62,4 +63,6 @@ dependencies {
     implementation ("androidx.camera:camera-view:1.3.4")
     //OLS (forecasting)
     implementation ("org.apache.commons:commons-math3:3.6.1")
+    //Chart Library
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Profile">
+        <Preference
+            android:key="edit_profile"
+            android:title="Profile"
+            android:summary="Name, DoB, Gender"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Units and Display">
+        <ListPreference
+            android:key="units_key"
+            android:title="Units"
+            android:entries="@array/units_entries"
+            android:entryValues="@array/units_values"
+            android:defaultValue="imperial"/>
+
+        <ListPreference
+            android:key="altitude_key"
+            android:title="Altitude mode"
+            android:entries="@array/alt_entries"
+            android:entryValues="@array/alt_values"
+            android:defaultValue="low"/>
+
+        <ListPreference
+            android:key="theme_key"
+            android:title="Theme"
+            android:entries="@array/theme_entries"
+            android:entryValues="@array/theme_values"
+            android:defaultValue="system"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Data">
+        <Preference
+            android:key="export_csv"
+            android:title="Export CSV"
+            android:summary="Share your logs as a CSV file"/>
+        <Preference
+            android:key="reset_scores"
+            android:title="Reset Logs"
+            android:summary="Delete all PRTs and Runs"/>
+        <Preference
+            android:key="reset_all"
+            android:title="Reset All"
+            android:summary="Clear logs and local settings"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="App">
+        <Preference
+            android:key="permissions"
+            android:title="Permissions"
+            android:summary="Open app permissions"/>
+        <Preference
+            android:key="privacy"
+            android:title="Privacy Policy"/>
+        <Preference
+            android:key="about"
+            android:title="About"/>
+    </PreferenceCategory>
+</androidx.preference.PreferenceScreen>

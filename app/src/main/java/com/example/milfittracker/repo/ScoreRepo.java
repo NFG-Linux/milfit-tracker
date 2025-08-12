@@ -36,6 +36,10 @@ public class ScoreRepo {
         });
     }
 
+    public LiveData<List<Scores>> getAllLive() {
+        return scoreDAO.getAllLive();
+    }
+
     public void getAll(Callback<List<Scores>> callback) {
         appExec.execute(() -> {
             List<Scores> scores = scoreDAO.getAll();

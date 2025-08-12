@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="units_entries">
+        <item>mi / ft</item>
+        <item>km / m</item>
+    </string-array>
+    <string-array name="units_values">
+        <item>imperial</item>
+        <item>metric</item>
+    </string-array>
+
+    <string-array name="alt_entries">
+        <item>Low (&lt; 5000 ft)</item>
+        <item>High (≥ 5000 ft)</item>
+    </string-array>
+    <string-array name="alt_values">
+        <item>low</item>
+        <item>high</item>
+    </string-array>
+
+    <string-array name="theme_entries">
+        <item>System</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+</resources>
