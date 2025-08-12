@@ -16,12 +16,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/branchFragment"
-        android:name="com.example.milfittracker.ui.home.BranchFragment"
-        android:label="Branch" >
-    </fragment>
-
-    <fragment
         android:id="@+id/navyFragment"
         android:name="com.example.milfittracker.ui.navy.NavyFragment"
         android:label="Navy" />
