@@ -3,7 +3,6 @@ package com.example.milfittracker.ui.onboarding;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
-import com.example.milfittracker.MainActivity;
 import com.example.milfittracker.R;
 import com.example.milfittracker.repo.UserRepo;
 import com.example.milfittracker.room.MilFitDB;

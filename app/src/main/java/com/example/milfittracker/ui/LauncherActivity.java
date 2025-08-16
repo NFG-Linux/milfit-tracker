@@ -5,9 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.milfittracker.MainActivity;
-import com.example.milfittracker.repo.UserRepo;
-import com.example.milfittracker.room.MilFitDB;
-import com.example.milfittracker.room.User;
+import com.example.milfittracker.helpers.LaunchOrder;
+import com.example.milfittracker.ui.welcome.WelcomeActivity;
 import com.example.milfittracker.ui.onboarding.OnboardingActivity;
 
 public class LauncherActivity extends AppCompatActivity {
@@ -15,18 +14,13 @@ public class LauncherActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MilFitDB db = MilFitDB.getInstance(getApplicationContext());
-        UserRepo userRepo = new UserRepo(db);
-
-        userRepo.getUser(user -> {
-            Intent intent;
-            if (user == null) {
-                intent = new Intent(this, OnboardingActivity.class);
-            } else {
-                intent = new Intent(this, MainActivity.class);
-            }
-            startActivity(intent);
-            finish();
-        });
+        if (!LaunchOrder.seenWelcome(this)) {
+            startActivity(new Intent(this, WelcomeActivity.class));
+        } else if (!LaunchOrder.onboarded(this)) {
+            startActivity(new Intent(this, OnboardingActivity.class));
+        } else {
+            startActivity(new Intent(this, MainActivity.class));
+        }
+        finish();
     }
 }

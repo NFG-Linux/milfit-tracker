@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="brand_primary">#556B2F</color>
+    <color name="brand_primary_dark">#3E4E20</color>
+    <color name="brand_accent">#D6C49B</color>
+    <color name="brand_accent_dark">#A8914F</color>
+    <color name="cream">#F4F6E9</color>
+    <color name="ink">#1F2328</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <color name="brand_primary_variant">#3E4E20</color>
+    <color name="surface_soft">#F4F5F0</color>
     <!-- fix build errors -->
     <color name="ic_launcher_background">#6B8E23</color>
 </resources>

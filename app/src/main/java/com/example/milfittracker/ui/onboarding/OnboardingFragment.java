@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.milfittracker.R;
+import com.example.milfittracker.helpers.LaunchOrder;
 import com.example.milfittracker.repo.UserRepo;
 import com.example.milfittracker.room.MilFitDB;
 import com.example.milfittracker.room.User;
@@ -112,6 +113,7 @@ public class OnboardingFragment extends Fragment {
 
         saveButton.setEnabled(false);
         userRepo.save(user, id -> {
+            LaunchOrder.setOnboarded(requireContext(), true);
             Toast.makeText(requireContext(), "Welcome, " + name + "!", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(requireContext(), MainActivity.class));
             requireActivity().finish();
