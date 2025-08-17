@@ -21,17 +21,24 @@ public class AnalysisFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_analysis, container, false);
-        pager = view.findViewById(R.id.pager);
-        tabs  = view.findViewById(R.id.tabs);
+        View root = inflater.inflate(R.layout.fragment_analysis, container, false);
 
-        pager.setAdapter(new AnalysisPager(this));
-        pager.setOffscreenPageLimit(1);
+        tabs = root.findViewById(R.id.tabs);
+        pager = root.findViewById(R.id.pager);
 
-        new TabLayoutMediator(tabs, pager, (tab, pos) -> {
-            tab.setText(pos == 0 ? "Trends" : (pos == 1 ? "Runs" : "Photos"));
+        // Attach adapter
+        AnalysisPager adapter = new AnalysisPager(this);
+        pager.setAdapter(adapter);
+
+        // Sync tabs with pager
+        new TabLayoutMediator(tabs, pager, (tab, position) -> {
+            switch (position) {
+                case 0: tab.setText("Trends"); break;
+                case 1: tab.setText("Forecasting"); break;
+                case 2: tab.setText("Photos"); break;
+            }
         }).attach();
 
-        return view;
+        return root;
     }
 }

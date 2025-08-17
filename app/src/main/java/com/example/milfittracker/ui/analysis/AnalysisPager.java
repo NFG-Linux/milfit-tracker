@@ -5,16 +5,27 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class AnalysisPager extends FragmentStateAdapter {
-    public AnalysisPager(@NonNull Fragment parent) { super(parent); }
+    public AnalysisPager(@NonNull Fragment parent) {
+        super(parent);
+    }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        if (position == 0) return new TrendsFragment();
-        if (position == 1) return new AnalysisRunsFragment();
-        return new PhotosFragment();
+        switch (position) {
+            case 0:
+                return new TrendsFragment();
+            case 1:
+                return new ForecastingFragment();
+            case 2:
+                return new PhotosFragment();
+            default:
+                return new TrendsFragment();
+        }
     }
 
     @Override
-    public int getItemCount() { return 3; }
+    public int getItemCount() {
+        return 3;
+    }
 }
