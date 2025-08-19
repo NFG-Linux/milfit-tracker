@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.Room;
 import androidx.room.Database;
 
-@Database(entities = {SetGoal.class, Scores.class, User.class}, version = 3, exportSchema = false)
+@Database(entities = {SetGoal.class, Scores.class, User.class}, version = 4, exportSchema = false)
 public abstract class MilFitDB extends RoomDatabase {
     private static volatile MilFitDB INSTANCE;
 

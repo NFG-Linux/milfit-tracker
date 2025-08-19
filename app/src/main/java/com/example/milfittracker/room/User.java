@@ -18,6 +18,12 @@ public class User {
     @ColumnInfo(name = "birthday")
     private String bDay;
 
+    @ColumnInfo(name = "PRT Date")
+    private String PRT;
+
+    @ColumnInfo(name = "Branch")
+    private String branch;
+
     @ColumnInfo(name = "gender")
     private String gender;
 
@@ -33,6 +39,12 @@ public class User {
 
     public String getBDay() { return bDay; }
     public void setBDay(String bDay) { this.bDay = bDay; }
+
+    public String getPRT() { return PRT; }
+    public void setPRT(String bDay) { this.PRT = bDay; }
+
+    public String getBranch() { return branch; }
+    public void setBranch(String branch) { this.branch = branch; }
 
     public String getGender() { return gender; }
     public void setGender(String gender) { this.gender = gender; }

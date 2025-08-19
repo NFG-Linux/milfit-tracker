@@ -16,6 +16,11 @@ public class OnboardingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+        setContentView(R.layout.activity_onboarding);
+
         userRepo = new UserRepo(MilFitDB.getInstance(getApplicationContext()));
 
         userRepo.hasAny(exists -> {

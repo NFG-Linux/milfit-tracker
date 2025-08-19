@@ -39,7 +39,6 @@ public class MoreFragment extends PreferenceFragmentCompat {
             return true;
         });
 
-        // Units (nothing to do here yet—stored in SharedPreferences automatically)
         ListPreference units = findPreference("units_key");
         if (units != null) units.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 

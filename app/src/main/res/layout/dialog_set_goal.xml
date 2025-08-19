@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/input_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Event name (e.g., Push-ups)"/>
+
+    <EditText
+        android:id="@+id/input_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Goal value (e.g., 80)"/>
+
+    <EditText
+        android:id="@+id/input_unit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Unit (e.g., reps, sec)"/>
+
+    <Button
+        android:id="@+id/select_date_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Goal Date"/>
+
+</LinearLayout>

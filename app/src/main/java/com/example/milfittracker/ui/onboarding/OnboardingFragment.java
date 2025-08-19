@@ -12,6 +12,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,11 +31,15 @@ public class OnboardingFragment extends Fragment {
 
     private EditText nameIn;
     private Button dobButton;
+    private Button PRTButton;
+    private Spinner pickBranch;
     private RadioGroup genderGrp;
     private RadioGroup altiGrp;
     private Button saveButton;
 
-    private String selectedDob; // yyyy-MM-dd
+    private String selectedDob;
+    private String selectedPRT;
+    private String selectedBranch;
 
     private UserRepo userRepo;
 
@@ -50,17 +57,41 @@ public class OnboardingFragment extends Fragment {
 
         nameIn     = v.findViewById(R.id.input_name);
         dobButton     = v.findViewById(R.id.button_dob);
+        PRTButton = v.findViewById(R.id.button_prt);
+        pickBranch = v.findViewById(R.id.branches);
         genderGrp   = v.findViewById(R.id.grp_gender);
         altiGrp = v.findViewById(R.id.grp_alti);
         saveButton    = v.findViewById(R.id.button_save);
 
         userRepo = new UserRepo(MilFitDB.getInstance(requireContext().getApplicationContext()));
 
-        dobButton.setOnClickListener(view -> showDatePicker());
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                requireContext(),
+                R.array.branch_options,
+                android.R.layout.simple_spinner_item
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        pickBranch.setAdapter(adapter);
+
+        pickBranch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                String choice = parent.getItemAtPosition(pos).toString();
+                selectedBranch = choice;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                selectedBranch = null;
+            }
+        });
+
+        dobButton.setOnClickListener(view -> showDobDatePicker());
+        PRTButton.setOnClickListener(view -> showPRTDatePicker());
         saveButton.setOnClickListener(view -> saveUser());
     }
 
-    private void showDatePicker() {
+    private void showDobDatePicker() {
         Calendar c = Calendar.getInstance();
         int y = c.get(Calendar.YEAR);
         int m = c.get(Calendar.MONTH);
@@ -77,6 +108,23 @@ public class OnboardingFragment extends Fragment {
         dlg.show();
     }
 
+    private void showPRTDatePicker() {
+        Calendar c = Calendar.getInstance();
+        int y = c.get(Calendar.YEAR);
+        int m = c.get(Calendar.MONTH);
+        int d = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog dlg = new DatePickerDialog(requireContext(),
+                (DatePicker datePicker, int year, int month, int day) -> {
+                    // month is 0-based
+                    String mm = String.format("%02d", month + 1);
+                    String dd = String.format("%02d", day);
+                    selectedPRT = year + "-" + mm + "-" + dd;
+                    PRTButton.setText(selectedPRT);
+                }, y, m, d);
+        dlg.show();
+    }
+
     private void saveUser() {
         String name = nameIn.getText() != null ? nameIn.getText().toString().trim() : "";
 
@@ -86,6 +134,16 @@ public class OnboardingFragment extends Fragment {
         }
         if (TextUtils.isEmpty(selectedDob)) {
             Toast.makeText(requireContext(), "Select date of birth", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (TextUtils.isEmpty(selectedPRT)) {
+            Toast.makeText(requireContext(), "Select date of next Official PRT or goal Date", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (TextUtils.isEmpty(selectedBranch)) {
+            Toast.makeText(requireContext(), "Select Branch", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -108,6 +166,8 @@ public class OnboardingFragment extends Fragment {
         User user = new User();
         user.setName(name);
         user.setBDay(selectedDob);
+        user.setPRT(selectedPRT);
+        user.setBranch(selectedBranch);
         user.setGender(gender);
         user.setAltiGrp(altitudeGroupValue);
 
