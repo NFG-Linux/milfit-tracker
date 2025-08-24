@@ -20,7 +20,7 @@ public class SetGoalRepo {
         goalDao = db.setGoalDAO();
     }
 
-    public LiveData<List<Scores>> getAllLive() {
+    public LiveData<List<SetGoal>> getAllLive() {
         return goalDao.getAllLive();
     }
 

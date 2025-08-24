@@ -22,4 +22,20 @@ public class SetGoal {
         this.goalUnit = goalUnit;
         this.goalDate = goalDate;
     }
+
+    public String getBranch() {
+        return branch;
+    }
+    public String getEvent() {
+        return event;
+    }
+    public int getValue() {
+        return goalVal;
+    }
+    public String getUnit() {
+        return goalUnit;
+    }
+    public String getDate() {
+        return goalDate;
+    }
 }

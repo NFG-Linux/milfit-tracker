@@ -26,6 +26,8 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import com.example.milfittracker.R;
+import com.example.milfittracker.repo.UserRepo;
+import com.example.milfittracker.room.MilFitDB;
 import com.example.milfittracker.room.Scores;
 import com.example.milfittracker.ui.log.ScoreViewModel;
 import com.example.milfittracker.room.SetGoal;
@@ -64,19 +66,53 @@ public class airForceFragment extends Fragment {
         Button runPractice = v.findViewById(R.id.run_practice);
         Button startFullMock = v.findViewById(R.id.start_full_mock);
 
-        pushupPractice.setOnClickListener(v1 ->
-                Toast.makeText(getContext(), "Push-up Practice Started", Toast.LENGTH_SHORT).show());
+        pushupPractice.setOnClickListener(v1 -> {
+            Bundle args = new Bundle();
+            args.putString("branch", "Air Force");
+            args.putString("event", "Push-ups");
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.stopwatchFragment, args);
+        });
 
-        plankPractice.setOnClickListener(v1 ->
-                Toast.makeText(getContext(), "Plank Practice Started", Toast.LENGTH_SHORT).show());
+        plankPractice.setOnClickListener(v1 -> {
+            Bundle args = new Bundle();
+            args.putString("branch", "Air Force");
+            args.putString("event", "Plank");
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.stopwatchFragment, args);
+        });
 
-        runPractice.setOnClickListener(v1 ->
-                Toast.makeText(getContext(), "Run Practice Started", Toast.LENGTH_SHORT).show());
+        runPractice.setOnClickListener(v1 -> {
+            Bundle args = new Bundle();
+            args.putString("branch", "Air Force");
+            args.putString("event", "1.5-mile Run");
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.stopwatchFragment, args);
+        });
 
         startFullMock.setOnClickListener(v1 ->
                 Toast.makeText(getContext(), "Full Mock PT Test Started", Toast.LENGTH_SHORT).show());
 
         vm = new ViewModelProvider(requireActivity()).get(ScoreViewModel.class);
+
+        new SetGoalRepo(requireContext()).getAllLive().observe(
+                getViewLifecycleOwner(), goals -> {
+                    for (SetGoal g : goals) {
+                        if ("Air Force".equalsIgnoreCase(g.getBranch())) {
+                            switch (g.getEvent()) {
+                                case "Push-ups":
+                                    pushupTarget.setText("Target: " + g.getValue());
+                                    break;
+                                case "Plank":
+                                    plankTarget.setText("Target: " + formatSeconds(g.getValue()));
+                                    break;
+                                case "1.5-mile Run":
+                                    runTarget.setText("Target: " + formatSeconds(g.getValue()));
+                                    break;
+                            }
+                        }
+                    }
+                });
 
         vm.getAllLive().observe(getViewLifecycleOwner(), list -> {
             Scores latestPush = latestForBranch(list, "Air Force", "Push-ups");
@@ -95,131 +131,96 @@ public class airForceFragment extends Fragment {
         });
 
 
-        btnGoals.setOnClickListener(vw ->
-                btnGoals.setOnClickListener(vw2 -> showGoalDialog()));
+        btnGoals.setOnClickListener(vw2 -> showGoalDialog());
 
         btnMock.setOnClickListener(vw -> {
             NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.start_full_mock);
+            navController.navigate(R.id.mock_prt_air_force);
         });
 
         return v;
     }
 
     private void showGoalDialog() {
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_set_goal, null);
-        EditText inputValue = dialogView.findViewById(R.id.input_value);
-        EditText inputUnit = dialogView.findViewById(R.id.input_unit);
-        EditText inputEvent = dialogView.findViewById(R.id.input_event);
-        Button dateBtn = dialogView.findViewById(R.id.select_date_btn);
+        View dialogView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.set_goals_air_force, null);
 
-        final String[] selectedDate = {null};
-        dateBtn.setOnClickListener(v -> {
-            Calendar c = Calendar.getInstance();
-            new DatePickerDialog(requireContext(), (dp, y, m, d) -> {
-                selectedDate[0] = String.format("%04d-%02d-%02d", y, m + 1, d);
-                dateBtn.setText(selectedDate[0]);
-            }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
-        });
+        EditText inputPushups = dialogView.findViewById(R.id.input_pushups);
+        EditText inputPlank = dialogView.findViewById(R.id.input_plank);
+        EditText inputRun = dialogView.findViewById(R.id.input_run);
 
         new AlertDialog.Builder(requireContext())
-                .setTitle("Set Goal")
+                .setTitle("Set Air Force Goals")
                 .setView(dialogView)
                 .setPositiveButton("Save", (d, w) -> {
-                    String event = inputEvent.getText().toString().trim();
-                    String valStr = inputValue.getText().toString().trim();
-                    String unit = inputUnit.getText().toString().trim();
-                    if (event.isEmpty() || valStr.isEmpty() || unit.isEmpty() || selectedDate[0] == null) {
-                        Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    int val = Integer.parseInt(valStr);
+                    String pushStr = inputPushups.getText().toString().trim();
+                    String plankStr = inputPlank.getText().toString().trim();
+                    String runStr = inputRun.getText().toString().trim();
 
-                    SetGoal goal = new SetGoal("Air Force", event, val, unit, selectedDate[0]);
-                    new SetGoalRepo(requireContext()).save(goal);
-                    Toast.makeText(requireContext(), "Goal saved", Toast.LENGTH_SHORT).show();
+                    if (!pushStr.isEmpty()) {
+                        int reps = Integer.parseInt(pushStr);
+                        new SetGoalRepo(requireContext())
+                                .save(new SetGoal("Air Force", "Push-ups", reps, "reps", null));
+                    }
+
+                    if (!plankStr.isEmpty()) {
+                        int secs = parseMmSs(plankStr);
+                        if (secs > 0) {
+                            new SetGoalRepo(requireContext())
+                                    .save(new SetGoal("Air Force", "Plank", secs, "sec", null));
+                        }
+                    }
+
+                    if (!runStr.isEmpty()) {
+                        int secs = parseMmSs(runStr);
+                        if (secs > 0) {
+                            new SetGoalRepo(requireContext())
+                                    .save(new SetGoal("Air Force", "1.5-mile Run", secs, "sec", null));
+                        }
+                    }
+
+                    Toast.makeText(requireContext(), "Goals saved", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void saveScore(String event, int value, String unit) {
-        Scores s = new Scores();
-        s.setBranch("Air Force");
-        s.setEvent(event);
-        s.setGender("Unspecified");
-        s.setAge(0);
-        s.setEventValue(value);
-        s.setUnit(unit);
-        s.setDate(LocalDateTime.now().toString());
+    private void saveScore(String branch, String event, int value, String unit) {
+        MilFitDB db = MilFitDB.getInstance(requireContext());
+        UserRepo userRepo = new UserRepo(db);
 
-        vm.insert(s);
-        Toast.makeText(requireContext(), "Saved " + event, Toast.LENGTH_SHORT).show();
-    }
+        userRepo.getUser(user -> {
+            if (user == null) {
+                Toast.makeText(requireContext(), "No user profile found", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-    private void showRepsDialog(String title, String unit) {
-        EditText input = new EditText(requireContext());
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setHint("Enter reps");
-        input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
+            Scores s = new Scores();
+            s.setBranch(branch);
+            s.setEvent(event);
+            s.setGender(user.getGender());
 
-        new AlertDialog.Builder(requireContext())
-                .setTitle(title)
-                .setView(input)
-                .setPositiveButton("Save", (d, w) -> {
-                    String t = input.getText().toString().trim();
-                    if (!t.isEmpty()) {
-                        int reps = Integer.parseInt(t);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            saveScore(title, reps, unit);
-                        }
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
+            int age = 0;
+            try {
+                if (user.getBDay() != null) {
+                    java.time.LocalDate birth = java.time.LocalDate.parse(user.getBDay());
+                    age = java.time.Period.between(birth, java.time.LocalDate.now()).getYears();
+                }
+            } catch (Exception ignored) {
+            }
 
-    private void showTimeDialog(String title, String unit) {
-        EditText input = new EditText(requireContext());
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setHint("Seconds");
+            s.setAge(age);
+            s.setEventValue(value);
+            s.setUnit(unit);
+            s.setDate(LocalDateTime.now().toString());
 
-        new AlertDialog.Builder(requireContext())
-                .setTitle(title)
-                .setView(input)
-                .setPositiveButton("Save", (d, w) -> {
-                    String t = input.getText().toString().trim();
-                    if (!t.isEmpty()) {
-                        int secs = Integer.parseInt(t);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            saveScore(title, secs, unit);
-                        }
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
+            new ViewModelProvider(requireActivity())
+                    .get(com.example.milfittracker.ui.log.ScoreViewModel.class)
+                    .insert(s);
 
-    private void showRunDialog() {
-        EditText input = new EditText(requireContext());
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setHint("mm:ss");
-
-        new AlertDialog.Builder(requireContext())
-                .setTitle("1.5-mile Run (mm:ss)")
-                .setView(input)
-                .setPositiveButton("Save", (d, w) -> {
-                    String t = input.getText().toString().trim();
-                    int secs = parseMmSs(t);
-                    if (secs >= 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        saveScore("1.5-mile Run", secs, "sec");
-                    } else {
-                        Toast.makeText(requireContext(), "Format mm:ss", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
+            Toast.makeText(getContext(), "Saved " + event, android.widget.Toast.LENGTH_SHORT).show();
+        });
     }
 
     //helpers

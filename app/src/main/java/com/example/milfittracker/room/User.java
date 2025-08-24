@@ -30,7 +30,6 @@ public class User {
     @ColumnInfo(name = "altitude_group")
     private String altiGrp;
 
-    // --- Canonical getters/setters (Room uses these/fields) ---
     public long getId() { return id; }
     public void setId(long id) { this.id = id; }
 

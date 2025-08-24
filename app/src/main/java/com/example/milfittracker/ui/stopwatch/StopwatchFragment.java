@@ -1,6 +1,7 @@
 package com.example.milfittracker.ui.stopwatch;
 
 import android.os.Bundle;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -11,21 +12,27 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-
-import com.example.milfittracker.R;
-
+import androidx.lifecycle.ViewModelProvider;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Locale;
+import com.example.milfittracker.R;
+import com.example.milfittracker.room.Scores;
+import com.example.milfittracker.room.MilFitDB;
+import com.example.milfittracker.room.User;
+import com.example.milfittracker.repo.UserRepo;
+
 
 public class StopwatchFragment extends Fragment {
 
     private TextView timerText, lastLapText;
-    private Button btnStartStop, btnPause, btnLap, btnReset, btnRest;
+    private Button btnStartStop, btnPause, btnLap, btnReset, btnRest, btnComplete;
     private ListView lapsList;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -36,6 +43,8 @@ public class StopwatchFragment extends Fragment {
 
     private ArrayAdapter<String> lapsAdapter;
     private final ArrayList<String> laps = new ArrayList<>();
+    private String event;
+    private String branch;
 
     private final Runnable ticker = new Runnable() {
         @Override public void run() {
@@ -53,6 +62,11 @@ public class StopwatchFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_stopwatch, container, false);
 
+        if (getArguments() != null) {
+            branch = getArguments().getString("branch", "");
+            event = getArguments().getString("event", "");
+        }
+
         timerText = v.findViewById(R.id.timer);
         lastLapText = v.findViewById(R.id.last_lap);
         btnStartStop = v.findViewById(R.id.start_stop);
@@ -61,6 +75,11 @@ public class StopwatchFragment extends Fragment {
         btnReset = v.findViewById(R.id.reset);
         btnRest = v.findViewById(R.id.rest);
         lapsList = v.findViewById(R.id.list_laps);
+        btnComplete = v.findViewById(R.id.session_complete);
+
+        if (event != null && !event.isEmpty()) {
+            startPracticeMode(event);
+        }
 
         lapsAdapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_list_item_1, laps);
@@ -79,10 +98,117 @@ public class StopwatchFragment extends Fragment {
             new RestDialog().show(getParentFragmentManager(), "rest");
         });
 
+        btnComplete.setOnClickListener(v1 -> {
+            if (event == null || branch == null) return;
+
+            long elapsedMillis = currentElapsed();
+
+            if (event.equals("Plank")) {
+                int secs = (int) (elapsedMillis / 1000);
+                saveScore(branch, event, secs, "sec");
+            } else if (event.equals("1.5-mile Run")) {
+                int secs = (int) (elapsedMillis / 1000);
+                saveScore(branch, event, secs, "sec");
+            }
+
+            requireActivity().onBackPressed();
+        });
+
         timerText.setText(formatTime(currentElapsed()));
         btnStartStop.setText(running ? "Stop" : "Start");
         lastLapText.setText(formatTime(0));
         return v;
+    }
+
+    private void startPracticeMode(String event) {
+        btnStartStop.setEnabled(false);
+        btnPause.setEnabled(false);
+        btnLap.setEnabled(false);
+        btnReset.setEnabled(false);
+
+        new android.os.CountDownTimer(5000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                timerText.setText("Starting in " + (millisUntilFinished / 1000));
+            }
+            public void onFinish() {
+                btnStartStop.setEnabled(true);
+                btnPause.setEnabled(true);
+                btnReset.setEnabled(true);
+
+                if (event.equals("Push-ups")) {
+                    startPushupCountdown();
+                } else {
+                    toggleStartStop();
+                }
+            }
+        }.start();
+    }
+
+    private void startPushupCountdown() {
+        new android.os.CountDownTimer(60000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                long sec = millisUntilFinished / 1000;
+                timerText.setText(String.format(Locale.US, "00:%02d", sec));
+            }
+            public void onFinish() {
+                timerText.setText("00:00");
+                promptPushupReps();
+            }
+        }.start();
+    }
+
+    private void promptPushupReps() {
+        android.widget.EditText input = new android.widget.EditText(getContext());
+        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+
+        new android.app.AlertDialog.Builder(getContext())
+                .setTitle("Push-ups completed")
+                .setView(input)
+                .setPositiveButton("Save", (d, w) -> {
+                    int reps = Integer.parseInt(input.getText().toString().trim());
+                    saveScore(branch, event, reps, "reps");
+                    requireActivity().onBackPressed();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void saveScore(String branch, String event, int value, String unit) {
+        MilFitDB db = MilFitDB.getInstance(requireContext());
+        UserRepo userRepo = new UserRepo(db);
+
+        userRepo.getUser(user -> {
+            if (user == null) {
+                Toast.makeText(requireContext(), "No user profile found", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Scores s = new Scores();
+            s.setBranch(branch);
+            s.setEvent(event);
+            s.setGender(user.getGender());
+
+            int age = 0;
+            try {
+                if (user.getBDay() != null) {
+                    java.time.LocalDate birth = java.time.LocalDate.parse(user.getBDay());
+                    age = java.time.Period.between(birth, java.time.LocalDate.now()).getYears();
+                }
+            } catch (Exception ignored) {
+            }
+
+            s.setAge(age);
+            s.setEventValue(value);
+            s.setUnit(unit);
+            s.setDate(LocalDateTime.now().toString());
+
+            new ViewModelProvider(requireActivity())
+                    .get(com.example.milfittracker.ui.log.ScoreViewModel.class)
+                    .insert(s);
+
+            Toast.makeText(getContext(), "Saved " + event, android.widget.Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void updateUIStopped() {

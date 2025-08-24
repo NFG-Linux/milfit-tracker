@@ -30,8 +30,8 @@ public interface SetGoalDAO {
     @Query("SELECT * FROM set_goals")
     List<SetGoal> getAllGoals();
 
-    @Query("SELECT * FROM scores ORDER BY date DESC")
-    LiveData<List<Scores>> getAllLive();
+    @Query("SELECT * FROM set_goals ORDER BY id DESC")
+    LiveData<List<SetGoal>> getAllLive();
 
     @Query("SELECT * FROM set_goals WHERE ID = :id")
     SetGoal getGoalById(int id);
