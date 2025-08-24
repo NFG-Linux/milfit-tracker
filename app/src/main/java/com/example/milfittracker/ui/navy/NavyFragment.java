@@ -13,6 +13,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -27,7 +30,6 @@ import com.example.milfittracker.room.Scores;
 import com.example.milfittracker.ui.log.ScoreViewModel;
 import com.example.milfittracker.room.SetGoal;
 import com.example.milfittracker.repo.SetGoalRepo;
-import com.example.milfittracker.room.MilFitDB;
 
 public class NavyFragment extends Fragment {
 
@@ -66,17 +68,20 @@ public class NavyFragment extends Fragment {
             }
         });
 
-        btnStandards.setOnClickListener(vw ->
-                Toast.makeText(requireContext(), "Standards dialog TBD", Toast.LENGTH_SHORT).show());
+        btnStandards.setOnClickListener(vw -> {
+            NavController navController = Navigation.findNavController(vw);
+            navController.navigate(R.id.pdfViewerFragment);
+        });
 
 
         btnGoals.setOnClickListener(vw ->
                 btnGoals.setOnClickListener(vw2 -> showGoalDialog()));
 
-        btnMock.setOnClickListener(vw ->
-                Toast.makeText(requireContext(), "Mock PRT flow TBD", Toast.LENGTH_SHORT).show());
+        btnMock.setOnClickListener(vw -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.mock_prt_navy);
+        });
 
-        // Quick input dialogs
         btnRun.setOnClickListener(vw -> showRunDialog());
         btnPush.setOnClickListener(vw -> showRepsDialog("Push-ups", "reps"));
         btnPlank.setOnClickListener(vw -> showTimeDialog("Plank", "sec"));

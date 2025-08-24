@@ -31,27 +31,54 @@
 
     <fragment
         android:id="@+id/navyFragment"
-        android:name="com.example.milfittracker.ui.navy.NavyFragment"/>
+        android:name="com.example.milfittracker.ui.navy.NavyFragment">
+    <action
+        android:id="@+id/navy_to_mock_prt_navy"
+        app:destination="@id/mock_prt_navy" />
+    <action
+        android:id="@+id/navy_to_standards"
+        app:destination="@id/pdfViewerFragment"/>
+    </fragment>
 
     <fragment
         android:id="@+id/armyFragment"
-        android:name="com.example.milfittracker.ui.army.armyFragment"/>
+        android:name="com.example.milfittracker.ui.army.armyFragment">
+    <action
+        android:id="@+id/army_to_mock_prt_army"
+        app:destination="@id/mock_prt_army" />
+    </fragment>
 
     <fragment
         android:id="@+id/marineFragment"
-        android:name="com.example.milfittracker.ui.marines.marineCorpsFragment"/>
+        android:name="com.example.milfittracker.ui.marines.marineCorpsFragment">
+        <action
+            android:id="@+id/marines_to_mock_prt_marines"
+            app:destination="@id/mock_prt_marine_corps" />
+    </fragment>
 
     <fragment
         android:id="@+id/spaceForceFragment"
-        android:name="com.example.milfittracker.ui.spaceforce.spaceForceFragment"/>
+        android:name="com.example.milfittracker.ui.spaceforce.spaceForceFragment">
+        <action
+            android:id="@+id/spaceforce_to_mock_prt_spaceforce"
+            app:destination="@id/mock_prt_space_force" />
+    </fragment>
 
     <fragment
         android:id="@+id/airForceFragment"
-        android:name="com.example.milfittracker.ui.airforce.airForceFragment"/>
+        android:name="com.example.milfittracker.ui.airforce.airForceFragment">
+        <action
+            android:id="@+id/airforce_to_mock_prt_airforce"
+            app:destination="@id/mock_prt_air_force" />
+    </fragment>
 
     <fragment
         android:id="@+id/coastGuardFragment"
-        android:name="com.example.milfittracker.ui.coastguard.coastGuardFragment"/>
+        android:name="com.example.milfittracker.ui.coastguard.coastGuardFragment">
+        <action
+            android:id="@+id/coastguard_to_mock_prt_coastguard"
+            app:destination="@id/mock_prt_coast_guard" />
+    </fragment>
 
     <fragment
         android:id="@+id/stopwatchFragment"
@@ -73,4 +100,32 @@
     <fragment
         android:id="@+id/moreFragment"
         android:name="com.example.milfittracker.ui.more.MoreFragment"/>
+
+    <fragment
+        android:id="@+id/mock_prt_navy"
+        android:name="com.example.milfittracker.ui.navy.MockPRTNavyFragment"/>
+
+    <fragment
+        android:id="@+id/mock_prt_coast_guard"
+        android:name="com.example.milfittracker.ui.coastguard.MockPRTCoastGuardFragment"/>
+
+    <fragment
+        android:id="@+id/mock_prt_air_force"
+        android:name="com.example.milfittracker.ui.airforce.MockPRTAirForceFragment"/>
+
+    <fragment
+        android:id="@+id/mock_prt_space_force"
+        android:name="com.example.milfittracker.ui.spaceforce.MockPRTSpaceForceFragment"/>
+
+    <fragment
+        android:id="@+id/mock_prt_marine_corps"
+        android:name="com.example.milfittracker.ui.marines.MockPRTMarineCorpsFragment"/>
+
+    <fragment
+        android:id="@+id/mock_prt_army"
+        android:name="com.example.milfittracker.ui.army.MockPRTArmyFragment"/>
+
+    <fragment
+        android:id="@+id/pdfViewerFragment"
+        android:name="com.example.milfittracker.ui.pdf.PDFViewerFragment"/>
 </navigation>

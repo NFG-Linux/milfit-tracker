@@ -2,19 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/homeFragment"
-        android:icon="@drawable/ic_home_24"
-        android:title="Home" />
+        android:icon="@drawable/home_btm_nav"
+        android:title="Home"/>
     <item android:id="@+id/stopwatchFragment"
-        android:icon="@drawable/ic_timer_24"
+        android:icon="@drawable/stopwatch_btm_nav"
         android:title="Stopwatch" />
     <item android:id="@+id/logFragment"
-        android:icon="@drawable/ic_list_24"
+        android:icon="@drawable/log_btm_nav"
         android:title="Log" />
     <item android:id="@+id/analysisFragment"
-        android:icon="@drawable/ic_analysis_24"
+        android:icon="@drawable/analysis_btm_nav"
         android:title="Analysis" />
     <item android:id="@+id/moreFragment"
-        android:icon="@drawable/ic_more_24"
+        android:icon="@drawable/more_btm_nav"
         android:title="More" />
 
 </menu>

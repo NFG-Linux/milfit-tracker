@@ -22,8 +22,8 @@ public class ForecastingFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,@Nullable ViewGroup container,@Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_forecasting, container, false);
 
-        TextView forecastText = view.findViewById(R.id.forecast_text);
-        Button runForecastBtn = view.findViewById(R.id.btn_run_forecast);
+        TextView forecastTxt = view.findViewById(R.id.forecast_text);
+        Button runForecast = view.findViewById(R.id.btn_run_forecast);
 
         MilFitDB db = MilFitDB.getInstance(requireContext());
         ScoreRepo scoreRepo = new ScoreRepo(db);
@@ -40,11 +40,11 @@ public class ForecastingFragment extends Fragment {
                 String display = result.getMessage() != null
                         ? result.getMessage()
                         : "Forecast ready";
-                forecastText.setText(display);
+                forecastTxt.setText(display);
             }
         });
 
-        runForecastBtn.setOnClickListener(v -> vm.runForecast());
+        runForecast.setOnClickListener(v -> vm.runForecast());
 
         return view;
     }
