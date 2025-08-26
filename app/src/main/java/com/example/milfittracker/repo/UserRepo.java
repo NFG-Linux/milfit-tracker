@@ -50,4 +50,7 @@ public class UserRepo {
         });
     }
 
+    public User getUserSync() {
+        return userDao.getUser();
+    }
 }

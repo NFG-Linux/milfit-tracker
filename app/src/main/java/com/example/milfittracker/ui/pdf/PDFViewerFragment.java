@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Button;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,19 +35,20 @@ public class PDFViewerFragment extends Fragment {
         Button prev = view.findViewById(R.id.Prev);
         Button next = view.findViewById(R.id.Next);
 
+        String branch = getArguments().getString("branch");
+        String pdf = branch + "PRTstandards.pdf";
+
         try {
-            File file = new File(requireContext().getCacheDir(), "NavyPRTstandards.pdf");
-            if (!file.exists()) {
-                InputStream asset = requireContext().getAssets().open("NavyPRTstandards.pdf");
-                FileOutputStream out = new java.io.FileOutputStream(file);
-                byte[] buffer = new byte[1024];
-                int read;
-                while ((read = asset.read(buffer)) != -1) {
-                    out.write(buffer, 0, read);
-                }
-                asset.close();
-                out.close();
+            InputStream asset = requireContext().getAssets().open(pdf);
+            File file = new File(requireContext().getCacheDir(), pdf);
+            FileOutputStream out = new java.io.FileOutputStream(file);
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = asset.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
             }
+            asset.close();
+            out.close();
 
             fileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
             pdfRenderer = new PdfRenderer(fileDescriptor);

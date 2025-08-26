@@ -77,4 +77,8 @@ public class ScoreRepo {
             }
         });
     }
+
+    public List<Scores> getScoresSync(String branch, String event) {
+        return scoreDAO.getForBranchEvent(branch, event);
+    }
 }

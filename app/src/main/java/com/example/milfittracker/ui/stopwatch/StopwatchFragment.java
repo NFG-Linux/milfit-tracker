@@ -22,6 +22,8 @@ import androidx.lifecycle.ViewModelProvider;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Locale;
+
+import androidx.navigation.fragment.NavHostFragment;
 import com.example.milfittracker.R;
 import com.example.milfittracker.room.Scores;
 import com.example.milfittracker.room.MilFitDB;
@@ -102,22 +104,30 @@ public class StopwatchFragment extends Fragment {
             if (event == null || branch == null) return;
 
             long elapsedMillis = currentElapsed();
+            int secs = (int) (elapsedMillis / 1000);
 
-            if (event.equals("Plank")) {
-                int secs = (int) (elapsedMillis / 1000);
-                saveScore(branch, event, secs, "sec");
-            } else if (event.equals("1.5-mile Run")) {
-                int secs = (int) (elapsedMillis / 1000);
-                saveScore(branch, event, secs, "sec");
+            if (event.equals("Plank") || event.equals("1.5-mile Run")) {
+                saveScoreAndNavigate(branch, event, secs, "sec");
             }
-
-            requireActivity().onBackPressed();
         });
 
         timerText.setText(formatTime(currentElapsed()));
         btnStartStop.setText(running ? "Stop" : "Start");
         lastLapText.setText(formatTime(0));
         return v;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void saveScoreAndNavigate(String branch, String event, int value, String unit) {
+        // Call saveScore first
+        saveScore(branch, event, value, unit);
+
+        // Then safely navigate back AFTER a small delay
+        handler.post(() -> {
+            if (isAdded()) {
+                NavHostFragment.findNavController(StopwatchFragment.this).popBackStack();
+            }
+        });
     }
 
     private void startPracticeMode(String event) {
@@ -166,15 +176,14 @@ public class StopwatchFragment extends Fragment {
                 .setView(input)
                 .setPositiveButton("Save", (d, w) -> {
                     int reps = Integer.parseInt(input.getText().toString().trim());
-                    saveScore(branch, event, reps, "reps");
-                    requireActivity().onBackPressed();
+                    saveScoreAndNavigate(branch, event, reps, "reps");
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void saveScore(String branch, String event, int value, String unit) {
+    void saveScore(String branch, String event, int value, String unit) {
         MilFitDB db = MilFitDB.getInstance(requireContext());
         UserRepo userRepo = new UserRepo(db);
 

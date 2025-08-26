@@ -126,8 +126,10 @@ public class airForceFragment extends Fragment {
         });
 
         btnStandards.setOnClickListener(vw -> {
+            Bundle args = new Bundle();
+            args.putString("branch", "AirForce");
             NavController navController = Navigation.findNavController(vw);
-            navController.navigate(R.id.pdfViewerFragment);
+            navController.navigate(R.id.airforce_to_standards, args);
         });
 
 

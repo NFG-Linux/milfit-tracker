@@ -67,4 +67,6 @@ dependencies {
     implementation ("org.apache.commons:commons-math3:3.6.1")
     //Chart Library
     implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    //json handling
+    implementation("com.google.code.gson:gson:2.11.0")
 }

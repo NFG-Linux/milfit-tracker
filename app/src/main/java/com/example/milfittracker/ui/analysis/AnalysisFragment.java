@@ -26,11 +26,9 @@ public class AnalysisFragment extends Fragment {
         tabs = root.findViewById(R.id.tabs);
         pager = root.findViewById(R.id.pager);
 
-        // Attach adapter
         AnalysisPager adapter = new AnalysisPager(this);
         pager.setAdapter(adapter);
 
-        // Sync tabs with pager
         new TabLayoutMediator(tabs, pager, (tab, position) -> {
             switch (position) {
                 case 0: tab.setText("Trends"); break;

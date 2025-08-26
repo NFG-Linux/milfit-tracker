@@ -70,6 +70,13 @@
         <action
             android:id="@+id/airforce_to_mock_prt_airforce"
             app:destination="@id/mock_prt_air_force" />
+        <action
+            android:id="@+id/airforce_to_standards"
+            app:destination="@id/pdfViewerFragment">
+            <argument
+                android:name="branch"
+                app:argType="string"/>
+        </action>
     </fragment>
 
     <fragment
@@ -127,5 +134,9 @@
 
     <fragment
         android:id="@+id/pdfViewerFragment"
-        android:name="com.example.milfittracker.ui.pdf.PDFViewerFragment"/>
+        android:name="com.example.milfittracker.ui.pdf.PDFViewerFragment">
+        <argument
+            android:name="branch"
+            app:argType="string"/>
+    </fragment>
 </navigation>
