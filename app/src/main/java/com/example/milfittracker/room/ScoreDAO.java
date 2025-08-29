@@ -33,6 +33,18 @@ public interface ScoreDAO {
     @Query("SELECT * FROM scores WHERE event = :event ORDER BY date ASC")
     LiveData<List<Scores>> observeByEvent(String event);
 
+    @Query("SELECT * FROM scores WHERE sID = :sID ORDER BY date ASC")
+    List<Scores> getBySID(String sID);
+
+    @Query("SELECT DISTINCT sID FROM scores WHERE sID IS NOT NULL ORDER BY date DESC")
+    List<String> getAllSID();
+
+    @Query("SELECT * FROM scores WHERE sID = :sID ORDER BY date ASC")
+    LiveData<List<Scores>> observeScoresBySID(String sID);
+
+    @Query("SELECT * FROM scores WHERE event LIKE '%Run%' ORDER BY date DESC")
+    LiveData<List<Scores>> observeAllRuns();
+
     @Query("DELETE FROM scores")
     void clearAll();
 }

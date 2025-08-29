@@ -1,22 +1,20 @@
 package com.example.milfittracker.ui.log;
 
 import android.os.Bundle;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import com.example.milfittracker.R;
-import com.example.milfittracker.room.MilFitDB;
 import com.example.milfittracker.room.Scores;
-import com.example.milfittracker.repo.ScoreRepo;
 
-public class RunsFragment extends Fragment {
+public class PushupLogFragment extends Fragment {
     private ScoreViewModel vm;
     private ScoreList scores;
 
@@ -35,7 +33,7 @@ public class RunsFragment extends Fragment {
 
         vm = new ViewModelProvider(requireActivity()).get(ScoreViewModel.class);
 
-        vm.observeAllRuns().observe(getViewLifecycleOwner(), scores::submit);
+        vm.observeByEvent("Push-ups").observe(getViewLifecycleOwner(), this::updateScores);
 
         return view;
     }

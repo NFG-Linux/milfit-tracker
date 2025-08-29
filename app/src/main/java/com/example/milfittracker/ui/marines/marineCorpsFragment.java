@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
@@ -76,7 +76,7 @@ public class marineCorpsFragment extends Fragment {
 
         btnMock.setOnClickListener(vw -> {
             NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.mock_prt_marine_corps);
+            navController.navigate(R.id.marines_to_stopwatch);
         });
 
         btnRun.setOnClickListener(vw -> showRunDialog());
@@ -132,7 +132,7 @@ public class marineCorpsFragment extends Fragment {
         s.setAge(0);
         s.setEventValue(value);
         s.setUnit(unit);
-        s.setDate(LocalDateTime.now().toString());
+        s.setDate(LocalDate.now().toString());
 
         vm.insert(s);
         Toast.makeText(requireContext(), "Saved " + event, Toast.LENGTH_SHORT).show();

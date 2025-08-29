@@ -8,8 +8,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
 import com.example.milfittracker.R;
 import com.example.milfittracker.room.Scores;
+import com.example.milfittracker.helpers.FormatTime;
 
 public class ScoreList extends RecyclerView.Adapter<ScoreList.VH> {
     private final List<Scores> data = new ArrayList<>();
@@ -28,8 +31,16 @@ public class ScoreList extends RecyclerView.Adapter<ScoreList.VH> {
 
     @Override public void onBindViewHolder(@NonNull VH h, int pos) {
         Scores scores = data.get(pos);
+
+        String value;
+        if (scores.getUnit().equals("sec") || scores.getUnit().equals("time")) {
+            value = FormatTime.formatSeconds(scores.getEventValue());
+        } else {
+            value = scores.getEventValue() + " " + scores.getUnit();
+        }
+
         String title = scores.getEvent() + " • " + scores.getBranch();
-        String sub   = scores.getEventValue() + " " + scores.getUnit() + " • " + scores.getDate();
+        String sub = value + " • " + scores.getDate();
         h.title.setText(title);
         h.sub.setText(sub);
     }

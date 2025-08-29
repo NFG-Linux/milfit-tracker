@@ -33,13 +33,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Select Date of Birth"
+            android:textColor="@color/black"
             android:layout_marginTop="12dp"/>
 
         <Button
             android:id="@+id/button_prt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Next Official PRT or Goal Target Date"/>
+            android:text="Next Official PRT or Goal Target Date"
+            android:textColor="@color/black"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -112,6 +114,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save and Continue"
+            android:textColor="@color/black"
             android:layout_marginTop="24dp"/>
     </LinearLayout>
 </ScrollView>

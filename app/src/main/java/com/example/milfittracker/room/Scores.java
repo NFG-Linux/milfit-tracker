@@ -18,11 +18,11 @@ public class Scores {
     private int eventValue;
     private String unit;
     private String date;
+    private String sID;
 
     //constructor for room
     public Scores() {}
 
-    //getter and setter so id can stay private
     public long getId() {
         return id;
     }
@@ -79,8 +79,15 @@ public class Scores {
         this.date = date;
     }
 
+    public String getSID() {
+        return sID;
+    }
+    public void setSID(String sID) {
+        this.sID = sID;
+    }
+
     @Ignore
-    public Scores(String branch, String event, String gender, String ageInt, int eventValue, String unit, String date) {
+    public Scores(String branch, String event, String gender, int age, int eventValue, String unit, String date) {
         this.branch = branch;
         this.event = event;
         this.gender = gender;
@@ -88,5 +95,17 @@ public class Scores {
         this.eventValue = eventValue;
         this.unit = unit;
         this.date = date;
+    }
+
+    @Ignore
+    public Scores(String branch, String event, String gender, int age, int eventValue, String unit, String date, String sID) {
+        this.branch = branch;
+        this.event = event;
+        this.gender = gender;
+        this.age = age;
+        this.eventValue = eventValue;
+        this.unit = unit;
+        this.date = date;
+        this.sID = sID;
     }
 }

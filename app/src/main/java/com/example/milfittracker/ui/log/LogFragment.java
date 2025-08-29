@@ -28,7 +28,12 @@ public class LogFragment extends Fragment {
         pager.setAdapter(new LogPager(this));
 
         new TabLayoutMediator(tabs, pager, (tab, position) -> {
-            tab.setText(position == 0 ? "PRTs" : "Runs");
+            switch (position) {
+                case 0: tab.setText("PRTs"); break;
+                case 1: tab.setText("Pushups"); break;
+                case 2: tab.setText("Planks"); break;
+                case 3: tab.setText("Runs"); break;
+            }
         }).attach();
 
         return view;

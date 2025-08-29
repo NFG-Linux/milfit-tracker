@@ -40,6 +40,10 @@ public class ScoreRepo {
         return scoreDAO.getAllLive();
     }
 
+    public LiveData<List<Scores>> observeAllRun() {
+        return scoreDAO.observeAllRuns();
+    }
+
     public void getAll(Callback<List<Scores>> callback) {
         appExec.execute(() -> {
             List<Scores> scores = scoreDAO.getAll();
@@ -67,6 +71,24 @@ public class ScoreRepo {
             List<Scores> scores = scoreDAO.getForBranchEventBetween(branch, event, start, end);
             appExec.main(() -> callback.onComplete(scores));
         });
+    }
+
+    public void getScoresBySID(String sID, Callback<List<Scores>> callback) {
+        appExec.execute(() -> {
+            List<Scores> scores = scoreDAO.getBySID(sID);
+            appExec.main(() -> callback.onComplete(scores));
+        });
+    }
+
+    public void getAllSID(Callback<List<String>> callback) {
+        appExec.execute(() -> {
+            List<String> sessionIds = scoreDAO.getAllSID();
+            appExec.main(() -> callback.onComplete(sessionIds));
+        });
+    }
+
+    public LiveData<List<Scores>> observeScoresBySID(String sID) {
+        return scoreDAO.observeScoresBySID(sID);
     }
 
     public void clearAll(Runnable done) {

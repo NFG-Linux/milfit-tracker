@@ -12,12 +12,17 @@ public class LogPager extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return (position == 0) ? new PRTLogFragment()
-                : new RunsFragment();
+        switch (position) {
+            case 0: return new PRTLogFragment();
+            case 1: return new PushupLogFragment();
+            case 2: return new PlankLogFragment();
+            case 3: return new RunsFragment();
+            default: return new PRTLogFragment();
+        }
     }
 
     @Override
     public int getItemCount() {
-        return 2;
+        return 4;
     }
 }

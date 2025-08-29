@@ -1,11 +1,8 @@
 package com.example.milfittracker.ui.airforce;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.InputFilter;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import java.time.LocalDateTime;
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import com.example.milfittracker.R;
@@ -32,6 +28,7 @@ import com.example.milfittracker.room.Scores;
 import com.example.milfittracker.ui.log.ScoreViewModel;
 import com.example.milfittracker.room.SetGoal;
 import com.example.milfittracker.repo.SetGoalRepo;
+import com.example.milfittracker.helpers.FormatTime;
 
 public class airForceFragment extends Fragment {
 
@@ -49,7 +46,6 @@ public class airForceFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_air_force, container, false);
 
         Button btnStandards = v.findViewById(R.id.Standards);
-        Button btnMock      = v.findViewById(R.id.start_full_mock);
         Button btnGoals     = v.findViewById(R.id.Goals);
 
         pushupTarget = v.findViewById(R.id.pushup_target);
@@ -90,8 +86,13 @@ public class airForceFragment extends Fragment {
             navController.navigate(R.id.stopwatchFragment, args);
         });
 
-        startFullMock.setOnClickListener(v1 ->
-                Toast.makeText(getContext(), "Full Mock PT Test Started", Toast.LENGTH_SHORT).show());
+        startFullMock.setOnClickListener(v1 -> {
+            Bundle args = new Bundle();
+            args.putString("branch", "Air Force");
+            args.putBoolean("mock", true);
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.airforce_to_stopwatch, args);
+        });
 
         vm = new ViewModelProvider(requireActivity()).get(ScoreViewModel.class);
 
@@ -104,10 +105,10 @@ public class airForceFragment extends Fragment {
                                     pushupTarget.setText("Target: " + g.getValue());
                                     break;
                                 case "Plank":
-                                    plankTarget.setText("Target: " + formatSeconds(g.getValue()));
+                                    plankTarget.setText("Target: " + FormatTime.formatSeconds(g.getValue()));
                                     break;
                                 case "1.5-mile Run":
-                                    runTarget.setText("Target: " + formatSeconds(g.getValue()));
+                                    runTarget.setText("Target: " + FormatTime.formatSeconds(g.getValue()));
                                     break;
                             }
                         }
@@ -116,13 +117,13 @@ public class airForceFragment extends Fragment {
 
         vm.getAllLive().observe(getViewLifecycleOwner(), list -> {
             Scores latestPush = latestForBranch(list, "Air Force", "Push-ups");
-            if (latestPush != null) pushupLast.setText("Last: " + latestPush.getEventValue() + " " + latestPush.getUnit());
+            if (latestPush != null) pushupLast.setText("Last: " + latestPush.getEventValue());
 
             Scores latestPlank = latestForBranch(list, "Air Force", "Plank");
-            if (latestPlank != null) plankLast.setText("Last: " + latestPlank.getEventValue() + " " + latestPlank.getUnit());
+            if (latestPlank != null) plankLast.setText("Last: " + FormatTime.formatSeconds(latestPlank.getEventValue()));
 
             Scores latestRun = latestForBranch(list, "Air Force", "1.5-mile Run");
-            if (latestRun != null) runLast.setText("Last: " + formatSeconds(latestRun.getEventValue()));
+            if (latestRun != null) runLast.setText("Last: " + FormatTime.formatSeconds(latestRun.getEventValue()));
         });
 
         btnStandards.setOnClickListener(vw -> {
@@ -134,11 +135,6 @@ public class airForceFragment extends Fragment {
 
 
         btnGoals.setOnClickListener(vw2 -> showGoalDialog());
-
-        btnMock.setOnClickListener(vw -> {
-            NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.mock_prt_air_force);
-        });
 
         return v;
     }
@@ -215,7 +211,7 @@ public class airForceFragment extends Fragment {
             s.setAge(age);
             s.setEventValue(value);
             s.setUnit(unit);
-            s.setDate(LocalDateTime.now().toString());
+            s.setDate(LocalDate.now().toString());
 
             new ViewModelProvider(requireActivity())
                     .get(com.example.milfittracker.ui.log.ScoreViewModel.class)
@@ -236,12 +232,6 @@ public class airForceFragment extends Fragment {
         } catch (Exception e) {
             return -1;
         }
-    }
-
-    private String formatSeconds(int secs) {
-        int m = secs / 60;
-        int s = secs % 60;
-        return String.format("%d:%02d", m, s);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

@@ -27,11 +27,15 @@ public class ScoreViewModel extends AndroidViewModel {
         return allScores;
     }
 
+    public LiveData<List<Scores>> observeAllRuns() {
+        return repo.observeAllRun();
+    }
+
     public LiveData<List<Scores>> observeByEvent(String event) {
         return repo.observeByEvent(event);
     }
 
     public void insert(Scores scores) {
-        repo.insert(scores, id -> { /* no-op for now */ });
+        repo.insert(scores, id -> { });
     }
 }

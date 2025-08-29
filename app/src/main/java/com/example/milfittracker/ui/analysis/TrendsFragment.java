@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +69,7 @@ public class TrendsFragment extends Fragment {
         for (Scores scores : sorted) best = Math.max(best, safeValue(scores));
 
         // find latest score older than 30 days
-        LocalDateTime cutoff = LocalDateTime.now().minusDays(30);
+        LocalDate cutoff = LocalDate.now().minusDays(30);
         Integer older = null;
         for (Scores s : sorted) {
             if (safeDate(s).isBefore(cutoff)) { older = safeValue(s); break; }
@@ -81,11 +81,11 @@ public class TrendsFragment extends Fragment {
         Delta.setText((delta >= 0 ? "+" : "") + delta);
     }
 
-    private LocalDateTime safeDate(Scores scores) {
+    private LocalDate safeDate(Scores scores) {
         try {
-            return LocalDateTime.parse(scores.getDate());
+            return LocalDate.parse(scores.getDate());
         } catch (Exception e) {
-            return LocalDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault());
+            return LocalDate.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault());
         }
     }
     private int safeValue(Scores scores) {

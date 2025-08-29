@@ -42,35 +42,40 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Start" />
+                android:text="Start"
+                android:textColor="@color/black"/>
 
             <Button
                 android:id="@+id/pause"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Pause" />
+                android:text="Pause"
+                android:textColor="@color/black"/>
 
             <Button
                 android:id="@+id/lap"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Lap" />
+                android:text="Lap"
+                android:textColor="@color/black"/>
 
             <Button
                 android:id="@+id/reset"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Reset" />
+                android:text="Reset"
+                android:textColor="@color/black"/>
         </LinearLayout>
 
         <Button
             android:id="@+id/rest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Rest" />
+            android:text="Rest"
+            android:textColor="@color/black"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -78,19 +83,20 @@
             android:text="Laps"
             android:textStyle="bold"
             android:paddingTop="16dp"
-            android:paddingBottom="4dp" />
+            android:paddingBottom="4dp"/>
 
         <ListView
             android:id="@+id/list_laps"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:dividerHeight="6dp" />
+            android:dividerHeight="6dp"/>
 
         <Button
             android:id="@+id/session_complete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Session Complete"
+            android:textColor="@color/black"
             android:layout_marginTop="12dp"/>
     </LinearLayout>
 </FrameLayout>

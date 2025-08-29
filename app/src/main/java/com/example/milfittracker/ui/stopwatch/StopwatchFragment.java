@@ -1,33 +1,31 @@
 package com.example.milfittracker.ui.stopwatch;
 
+import android.app.Application;
+import android.app.AlertDialog.Builder;
 import android.os.Bundle;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Locale;
-
+import java.util.UUID;
 import androidx.navigation.fragment.NavHostFragment;
 import com.example.milfittracker.R;
 import com.example.milfittracker.room.Scores;
 import com.example.milfittracker.room.MilFitDB;
-import com.example.milfittracker.room.User;
 import com.example.milfittracker.repo.UserRepo;
 
 
@@ -47,6 +45,11 @@ public class StopwatchFragment extends Fragment {
     private final ArrayList<String> laps = new ArrayList<>();
     private String event;
     private String branch;
+    private String sID;
+    private boolean isMock;
+
+    private enum Stage { PUSHUPS, PLANK, RUN, DONE }
+    private Stage currentStage;
 
     private final Runnable ticker = new Runnable() {
         @Override public void run() {
@@ -67,6 +70,7 @@ public class StopwatchFragment extends Fragment {
         if (getArguments() != null) {
             branch = getArguments().getString("branch", "");
             event = getArguments().getString("event", "");
+            isMock = getArguments().getBoolean("mock", false);
         }
 
         timerText = v.findViewById(R.id.timer);
@@ -100,16 +104,14 @@ public class StopwatchFragment extends Fragment {
             new RestDialog().show(getParentFragmentManager(), "rest");
         });
 
-        btnComplete.setOnClickListener(v1 -> {
-            if (event == null || branch == null) return;
+        btnComplete.setOnClickListener(v1 -> handleComplete());
 
-            long elapsedMillis = currentElapsed();
-            int secs = (int) (elapsedMillis / 1000);
-
-            if (event.equals("Plank") || event.equals("1.5-mile Run")) {
-                saveScoreAndNavigate(branch, event, secs, "sec");
-            }
-        });
+        if (isMock) {
+            sID = UUID.randomUUID().toString();
+            startMockStage(Stage.PUSHUPS);
+        } else if (event != null && !event.isEmpty()) {
+            startPracticeMode(event);
+        }
 
         timerText.setText(formatTime(currentElapsed()));
         btnStartStop.setText(running ? "Stop" : "Start");
@@ -117,12 +119,72 @@ public class StopwatchFragment extends Fragment {
         return v;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void startMockStage(Stage stage) {
+        currentStage = stage;
+        resetAll();
+        switch (stage) {
+            case PUSHUPS:
+                event = "Push-ups";
+                startCountdownThenPushups(30000, "Pushups starting in ");
+                break;
+            case PLANK:
+                event = "Plank";
+                startCountdownThenStart(120000, "Plank starting in ");
+                break;
+            case RUN:
+                event = "1.5-mile Run";
+                startCountdownThenStart(600000, "Run starting in ");
+                break;
+            case DONE:
+                Toast.makeText(getContext(), "Mock PRT saved!", Toast.LENGTH_LONG).show();
+                if (isAdded()) NavHostFragment.findNavController(this).popBackStack();
+                break;
+        }
+    }
+
+    private void handleComplete() {
+        if (event == null || branch == null) return;
+
+        long elapsedMillis = currentElapsed();
+        int sec = (int) (elapsedMillis / 1000);
+
+        if (event.equals("Push-ups")) {
+            promptPushupReps(true);
+        } else {
+            if (event.equals("1.5-mile Run") || event.equals("2-mile Run") || event.equals("3-mile Run")) {
+                saveScore(branch, event, sec, "time");
+            } else {
+                saveScore(branch, event, sec, "sec");
+            }
+
+            if (isMock) {
+                if (currentStage == Stage.PLANK) {
+                    startMockStage(Stage.RUN);
+                } else if (currentStage == Stage.RUN) {
+                    startMockStage(Stage.DONE);
+                }
+            } else {
+                saveScoreAndNavigate(branch, event, sec,
+                        event.equals("1.5-mile Run") || event.equals("2-mile Run") || event.equals("3-mile Run")
+                                ? "time" : "sec");
+            }
+        }
+    }
+
+    private void startCountdownThenStart(long millis, String prefix) {
+        new CountDownTimer(millis, 1000) {
+            public void onTick(long millisUntilFinished) {
+                timerText.setText(prefix + (millisUntilFinished / 1000) + "s");
+            }
+            public void onFinish() {
+                toggleStartStop();
+            }
+        }.start();
+    }
+
     private void saveScoreAndNavigate(String branch, String event, int value, String unit) {
-        // Call saveScore first
         saveScore(branch, event, value, unit);
 
-        // Then safely navigate back AFTER a small delay
         handler.post(() -> {
             if (isAdded()) {
                 NavHostFragment.findNavController(StopwatchFragment.this).popBackStack();
@@ -136,7 +198,7 @@ public class StopwatchFragment extends Fragment {
         btnLap.setEnabled(false);
         btnReset.setEnabled(false);
 
-        new android.os.CountDownTimer(5000, 1000) {
+        new CountDownTimer(5000, 1000) {
             public void onTick(long millisUntilFinished) {
                 timerText.setText("Starting in " + (millisUntilFinished / 1000));
             }
@@ -148,8 +210,22 @@ public class StopwatchFragment extends Fragment {
                 if (event.equals("Push-ups")) {
                     startPushupCountdown();
                 } else {
-                    toggleStartStop();
+                    running = true;
+                    startRealtime = SystemClock.elapsedRealtime();
+                    handler.post(ticker);
+                    btnStartStop.setText("Stop");
                 }
+            }
+        }.start();
+    }
+
+    private void startCountdownThenPushups(long millis, String prefix) {
+        new CountDownTimer(millis, 1000) {
+            public void onTick(long millisUntilFinished) {
+                timerText.setText(prefix + (millisUntilFinished / 1000) + "s");
+            }
+            public void onFinish() {
+                startPushupCountdown();
             }
         }.start();
     }
@@ -162,38 +238,54 @@ public class StopwatchFragment extends Fragment {
             }
             public void onFinish() {
                 timerText.setText("00:00");
-                promptPushupReps();
+                if (isMock) {
+                    promptPushupReps(true);
+                } else {
+                    promptPushupReps(false);
+                }
             }
         }.start();
     }
 
-    private void promptPushupReps() {
-        android.widget.EditText input = new android.widget.EditText(getContext());
+    private void promptPushupReps(boolean fromMock) {
+        EditText input = new EditText(getContext());
         input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
 
-        new android.app.AlertDialog.Builder(getContext())
+        new Builder(getContext())
                 .setTitle("Push-ups completed")
                 .setView(input)
                 .setPositiveButton("Save", (d, w) -> {
                     int reps = Integer.parseInt(input.getText().toString().trim());
-                    saveScoreAndNavigate(branch, event, reps, "reps");
+                    saveScore(branch, event, reps, "reps");
+                    if (fromMock) {
+                        startMockStage(Stage.PLANK);
+                    } else {
+                        saveScoreAndNavigate(branch, "Push-ups", reps, "reps");
+                    }
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     void saveScore(String branch, String event, int value, String unit) {
-        MilFitDB db = MilFitDB.getInstance(requireContext());
+        if (!isAdded()) return;
+
+        MilFitDB db = MilFitDB.getInstance(requireContext().getApplicationContext());
         UserRepo userRepo = new UserRepo(db);
 
         userRepo.getUser(user -> {
+            if (!isAdded()) return;
+
             if (user == null) {
                 Toast.makeText(requireContext(), "No user profile found", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             Scores s = new Scores();
+            if (isMock) {
+                s.setSID(sID != null ? sID : UUID.randomUUID().toString());
+            }
+
             s.setBranch(branch);
             s.setEvent(event);
             s.setGender(user.getGender());
@@ -201,8 +293,8 @@ public class StopwatchFragment extends Fragment {
             int age = 0;
             try {
                 if (user.getBDay() != null) {
-                    java.time.LocalDate birth = java.time.LocalDate.parse(user.getBDay());
-                    age = java.time.Period.between(birth, java.time.LocalDate.now()).getYears();
+                    LocalDate birth = LocalDate.parse(user.getBDay());
+                    age = Period.between(birth, LocalDate.now()).getYears();
                 }
             } catch (Exception ignored) {
             }
@@ -210,31 +302,14 @@ public class StopwatchFragment extends Fragment {
             s.setAge(age);
             s.setEventValue(value);
             s.setUnit(unit);
-            s.setDate(LocalDateTime.now().toString());
+            s.setDate(LocalDate.now().toString());
 
             new ViewModelProvider(requireActivity())
                     .get(com.example.milfittracker.ui.log.ScoreViewModel.class)
                     .insert(s);
 
-            Toast.makeText(getContext(), "Saved " + event, android.widget.Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Saved " + event, android.widget.Toast.LENGTH_SHORT).show();
         });
-    }
-
-    private void updateUIStopped() {
-        running = false;
-        accumulatedMillis = 0L;
-        startRealtime = 0L;
-        lastLapMark = 0L;
-
-        if (timerText != null) timerText.setText(formatTime(0));
-
-        if (btnStartStop != null) btnStartStop.setText("Start");
-
-        if (lastLapText != null) lastLapText.setText("00:00.00");
-        if (laps != null) {
-            laps.clear();
-            if (lapsAdapter != null) lapsAdapter.notifyDataSetChanged();
-        }
     }
 
     private void toggleStartStop() {
@@ -342,7 +417,6 @@ public class StopwatchFragment extends Fragment {
             });
             view.findViewById(R.id.rest_done).setOnClickListener(v13 -> dismiss());
 
-            // auto-start
             running = true;
             startRealtime = SystemClock.elapsedRealtime();
             handler.post(tick);
