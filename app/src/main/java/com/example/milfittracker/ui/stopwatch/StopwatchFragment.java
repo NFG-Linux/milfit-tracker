@@ -1,12 +1,12 @@
 package com.example.milfittracker.ui.stopwatch;
 
-import android.app.Application;
 import android.app.AlertDialog.Builder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +17,16 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import java.time.LocalDate;
-import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
 import androidx.navigation.fragment.NavHostFragment;
 import com.example.milfittracker.R;
+import com.example.milfittracker.helpers.AppExec;
 import com.example.milfittracker.room.Scores;
 import com.example.milfittracker.room.MilFitDB;
+import com.example.milfittracker.room.User;
 import com.example.milfittracker.repo.UserRepo;
 
 
@@ -83,10 +84,6 @@ public class StopwatchFragment extends Fragment {
         lapsList = v.findViewById(R.id.list_laps);
         btnComplete = v.findViewById(R.id.session_complete);
 
-        if (event != null && !event.isEmpty()) {
-            startPracticeMode(event);
-        }
-
         lapsAdapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_list_item_1, laps);
         lapsList.setAdapter(lapsAdapter);
@@ -132,7 +129,13 @@ public class StopwatchFragment extends Fragment {
                 startCountdownThenStart(120000, "Plank starting in ");
                 break;
             case RUN:
-                event = "1.5-mile Run";
+                if ("Army".equals(branch)) {
+                    event = "2-mile Run";
+                } else if ("Marines".equals(branch)) {
+                    event = "3-mile Run";
+                } else {
+                    event = "1.5-mile Run";
+                }
                 startCountdownThenStart(600000, "Run starting in ");
                 break;
             case DONE:
@@ -149,25 +152,21 @@ public class StopwatchFragment extends Fragment {
         int sec = (int) (elapsedMillis / 1000);
 
         if (event.equals("Push-ups")) {
-            promptPushupReps(true);
-        } else {
-            if (event.equals("1.5-mile Run") || event.equals("2-mile Run") || event.equals("3-mile Run")) {
-                saveScore(branch, event, sec, "time");
-            } else {
-                saveScore(branch, event, sec, "sec");
-            }
+            return;
+        }
 
-            if (isMock) {
-                if (currentStage == Stage.PLANK) {
-                    startMockStage(Stage.RUN);
-                } else if (currentStage == Stage.RUN) {
-                    startMockStage(Stage.DONE);
-                }
-            } else {
-                saveScoreAndNavigate(branch, event, sec,
-                        event.equals("1.5-mile Run") || event.equals("2-mile Run") || event.equals("3-mile Run")
-                                ? "time" : "sec");
+        String unit = event.contains("Run")
+                ? "time" : "sec";
+
+        if (isMock) {
+            saveScore(branch, event, sec, unit);
+            if (currentStage == Stage.PLANK) {
+                startMockStage(Stage.RUN);
+            } else if (currentStage == Stage.RUN) {
+                startMockStage(Stage.DONE);
             }
+        } else {
+            saveScoreAndNavigate(branch, event, sec, unit);
         }
     }
 
@@ -184,6 +183,8 @@ public class StopwatchFragment extends Fragment {
 
     private void saveScoreAndNavigate(String branch, String event, int value, String unit) {
         saveScore(branch, event, value, unit);
+
+        Toast.makeText(requireContext(), "Saved " + event, Toast.LENGTH_SHORT).show();
 
         handler.post(() -> {
             if (isAdded()) {
@@ -231,13 +232,21 @@ public class StopwatchFragment extends Fragment {
     }
 
     private void startPushupCountdown() {
-        new android.os.CountDownTimer(60000, 1000) {
+        int timer;
+        if (branch.equals("Space Force") || branch.equals("Air Force")) {
+            timer = 60000;
+        } else {
+            timer = 120000;
+        }
+        new android.os.CountDownTimer(timer, 1000) {
             public void onTick(long millisUntilFinished) {
                 long sec = millisUntilFinished / 1000;
                 timerText.setText(String.format(Locale.US, "00:%02d", sec));
+                btnStartStop.setText("Stop");
             }
             public void onFinish() {
                 timerText.setText("00:00");
+                btnStartStop.setText("Start");
                 if (isMock) {
                     promptPushupReps(true);
                 } else {
@@ -256,8 +265,8 @@ public class StopwatchFragment extends Fragment {
                 .setView(input)
                 .setPositiveButton("Save", (d, w) -> {
                     int reps = Integer.parseInt(input.getText().toString().trim());
-                    saveScore(branch, event, reps, "reps");
                     if (fromMock) {
+                        saveScore(branch, event, reps, "reps");
                         startMockStage(Stage.PLANK);
                     } else {
                         saveScoreAndNavigate(branch, "Push-ups", reps, "reps");
@@ -269,17 +278,13 @@ public class StopwatchFragment extends Fragment {
 
     void saveScore(String branch, String event, int value, String unit) {
         if (!isAdded()) return;
+        Log.d("Stopwatch", "saveScore called: branch=" + branch + ", event=" + event + ", value=" + value + ", unit=" + unit);
 
         MilFitDB db = MilFitDB.getInstance(requireContext().getApplicationContext());
         UserRepo userRepo = new UserRepo(db);
 
-        userRepo.getUser(user -> {
-            if (!isAdded()) return;
-
-            if (user == null) {
-                Toast.makeText(requireContext(), "No user profile found", Toast.LENGTH_SHORT).show();
-                return;
-            }
+        AppExec.getInstance().execute(() -> {
+            User user = userRepo.getUserSync();
 
             Scores s = new Scores();
             if (isMock) {
@@ -289,6 +294,8 @@ public class StopwatchFragment extends Fragment {
             s.setBranch(branch);
             s.setEvent(event);
             s.setGender(user.getGender());
+
+            Log.d("Stopwatch", "Using branch=" + branch + " (user profile branch=" + user.getBranch() + ")");
 
             int age = 0;
             try {
@@ -304,11 +311,16 @@ public class StopwatchFragment extends Fragment {
             s.setUnit(unit);
             s.setDate(LocalDate.now().toString());
 
+            Log.d("Stopwatch", "Inserting: branch=" + s.getBranch() +
+                    ", event='" + s.getEvent() + "'" +
+                    ", unit=" + s.getUnit() +
+                    ", value=" + s.getEventValue());
+
             new ViewModelProvider(requireActivity())
                     .get(com.example.milfittracker.ui.log.ScoreViewModel.class)
                     .insert(s);
 
-            Toast.makeText(requireContext(), "Saved " + event, android.widget.Toast.LENGTH_SHORT).show();
+            Log.d("Stopwatch", "Inserted score: " + s);
         });
     }
 
@@ -363,7 +375,7 @@ public class StopwatchFragment extends Fragment {
         }
     }
 
-    private static String formatTime(long millis) {
+    public static String formatTime(long millis) {
         long totalSeconds = millis / 1000;
         long minutes = totalSeconds / 60;
         long seconds = totalSeconds % 60;

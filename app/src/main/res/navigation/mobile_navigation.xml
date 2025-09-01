@@ -48,6 +48,13 @@
         android:id="@+id/armyFragment"
         android:name="com.example.milfittracker.ui.army.armyFragment">
         <action
+            android:id="@+id/army_to_standards"
+            app:destination="@id/pdfViewerFragment">
+            <argument
+                android:name="branch"
+                app:argType="string"/>
+        </action>
+        <action
             android:id="@+id/army_to_stopwatch"
             app:destination="@id/stopwatchFragment">
             <argument
@@ -60,6 +67,13 @@
         android:id="@+id/marineFragment"
         android:name="com.example.milfittracker.ui.marines.marineCorpsFragment">
         <action
+            android:id="@+id/marines_to_standards"
+            app:destination="@id/pdfViewerFragment">
+            <argument
+                android:name="branch"
+                app:argType="string"/>
+        </action>
+        <action
             android:id="@+id/marines_to_stopwatch"
             app:destination="@id/stopwatchFragment">
             <argument
@@ -71,6 +85,13 @@
     <fragment
         android:id="@+id/spaceForceFragment"
         android:name="com.example.milfittracker.ui.spaceforce.spaceForceFragment">
+        <action
+            android:id="@+id/spaceforce_to_standards"
+            app:destination="@id/pdfViewerFragment">
+            <argument
+                android:name="branch"
+                app:argType="string"/>
+        </action>
         <action
             android:id="@+id/spaceforce_to_stopwatch"
             app:destination="@id/stopwatchFragment">
@@ -102,6 +123,13 @@
     <fragment
         android:id="@+id/coastGuardFragment"
         android:name="com.example.milfittracker.ui.coastguard.coastGuardFragment">
+        <action
+            android:id="@+id/coastguard_to_standards"
+            app:destination="@id/pdfViewerFragment">
+            <argument
+                android:name="branch"
+                app:argType="string"/>
+        </action>
         <action
             android:id="@+id/coastguard_to_stopwatch"
             app:destination="@id/stopwatchFragment">

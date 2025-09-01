@@ -56,6 +56,7 @@
                         android:id="@+id/spaceForce"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
+                        android:adjustViewBounds="true"
                         android:scaleType="fitCenter"
                         android:src="@drawable/sf_emblem"
                         android:background="@android:color/transparent"
@@ -65,7 +66,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Space Force"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/black"
                         android:textStyle="bold"
                         android:layout_marginTop="4dp"/>
                 </LinearLayout>
@@ -89,6 +90,7 @@
                         android:id="@+id/Navy"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
+                        android:adjustViewBounds="true"
                         android:scaleType="fitCenter"
                         android:src="@drawable/navy_emblem"
                         android:background="@android:color/transparent"
@@ -98,7 +100,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Navy"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/black"
                         android:textStyle="bold"
                         android:layout_marginTop="4dp"/>
                 </LinearLayout>
@@ -112,8 +114,9 @@
 
                     <ImageButton
                         android:id="@+id/Marines"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_width="115dp"
+                        android:layout_height="115dp"
+                        android:adjustViewBounds="true"
                         android:scaleType="fitCenter"
                         android:src="@drawable/mc_emblem"
                         android:background="@android:color/transparent"
@@ -123,7 +126,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Marine Corps"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/black"
                         android:textStyle="bold"
                         android:layout_marginTop="4dp"/>
                 </LinearLayout>
@@ -147,6 +150,7 @@
                         android:id="@+id/Army"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
+                        android:adjustViewBounds="true"
                         android:scaleType="fitCenter"
                         android:src="@drawable/army_emblem"
                         android:background="@android:color/transparent"
@@ -156,7 +160,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Army"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/black"
                         android:textStyle="bold"
                         android:layout_marginTop="4dp"/>
                 </LinearLayout>
@@ -172,6 +176,7 @@
                         android:id="@+id/coastGuard"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
+                        android:adjustViewBounds="true"
                         android:scaleType="fitCenter"
                         android:src="@drawable/cg_emblem"
                         android:background="@android:color/transparent"
@@ -181,7 +186,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Coast Guard"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/black"
                         android:textStyle="bold"
                         android:layout_marginTop="4dp"/>
                 </LinearLayout>
@@ -197,16 +202,17 @@
                         android:id="@+id/airForce"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
+                        android:adjustViewBounds="true"
                         android:scaleType="fitCenter"
                         android:src="@drawable/af_emblem"
-                        android:background="@android:color/transparent"
+                        android:background="@android:color/white"
                         android:contentDescription="Air Force" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Air Force"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/black"
                         android:textStyle="bold"
                         android:layout_marginTop="4dp"/>
                 </LinearLayout>

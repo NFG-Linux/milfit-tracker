@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/analysis_root"
@@ -10,7 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+        app:tabTextColor="@color/black"
+        app:tabSelectedTextColor="@color/black"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"

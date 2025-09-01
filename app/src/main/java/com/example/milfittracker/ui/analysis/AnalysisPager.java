@@ -3,6 +3,7 @@ package com.example.milfittracker.ui.analysis;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import com.example.milfittracker.forecasting.PhotosFragment;
 
 public class AnalysisPager extends FragmentStateAdapter {
     public AnalysisPager(@NonNull Fragment parent) {

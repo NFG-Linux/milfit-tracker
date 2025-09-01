@@ -5,9 +5,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import java.time.Period;
-import java.time.LocalDate;
-import com.example.milfittracker.helpers.AppExec;
 import com.example.milfittracker.repo.ScoreRepo;
 import com.example.milfittracker.repo.UserRepo;
 
@@ -15,7 +12,6 @@ public class ForecastingViewModel extends AndroidViewModel {
 
     private final ScoreRepo scoreRepo;
     private final UserRepo userRepo;
-    private final AppExec appExec = AppExec.getInstance();
 
     private final MutableLiveData<ForecastResult> forecastLive = new MutableLiveData<>();
 
@@ -29,44 +25,78 @@ public class ForecastingViewModel extends AndroidViewModel {
         return forecastLive;
     }
 
-    public void runForecast() {
+    public void runForecast(String eventType) {
         userRepo.getUser(user -> {
-            if (user == null) {
-                forecastLive.postValue(new ForecastResult("No user profile found"));
-                return;
-            }
-
             String branch = user.getBranch();
-            String gender = user.getGender();
-
-            int age = 0;
-            try {
-                if (user.getBDay() != null) {
-                    LocalDate birth = LocalDate.parse(user.getBDay());
-                    age = Period.between(birth, LocalDate.now()).getYears();
-                }
-            } catch (Exception ignored) {}
 
             ForecastEngine engine = new ForecastEngine(getApplication().getApplicationContext());
             ForecastResult result = new ForecastResult("Forecast generated");
             result.setBranch(branch);
 
-            String[] events = {"Push-ups", "Plank", "1.5-mile Run"};
-
-            for (String event : events) {
-                scoreRepo.getForBranchEvent(branch, event, history -> {
-                    ForecastResult partial = engine.forecastWithContext(history, user, event);
-
-                    if (partial.getProjections() != null) {
-                        partial.getProjections().forEach(result::addProjection);
+            switch (eventType) {
+                case "Pushups":
+                    scoreRepo.getForBranchEvent(user.getBranch(), "Push-ups", history -> {
+                        ForecastResult r = engine.forecastWithContext(history, user, "Push-ups");
+                        forecastLive.postValue(r);
+                    });
+                    break;
+                case "Plank":
+                    scoreRepo.getForBranchEvent(user.getBranch(), "Plank", history -> {
+                        ForecastResult r = engine.forecastWithContext(history, user, "Plank");
+                        forecastLive.postValue(r);
+                    });
+                    break;
+                case "Cardio":
+                    String runEvent = "";
+                    switch (user.getBranch()) {
+                        case "Navy":
+                        case "Coast Guard":
+                        case "Air Force":
+                        case "Space Force":
+                            runEvent = "1.5-mile Run";
+                            break;
+                        case "Army":
+                            runEvent = "2-mile Run";
+                            break;
+                        case "Marines":
+                            runEvent = "3-mile Run";
+                            break;
                     }
 
-                    if (partial.getMessage() != null && !partial.getMessage().isEmpty()) {
-                        result.setMessage(partial.getMessage());
+                    final String finalRunEvent = runEvent;
+
+                    scoreRepo.getForBranchEvent(user.getBranch(), runEvent, history -> {
+                        ForecastResult r = engine.forecastWithContext(history, user, finalRunEvent);
+                        forecastLive.postValue(r);
+                    });
+                    break;
+                case "MockPRT":
+                    String MockrunEvent;
+                    switch (user.getBranch()) {
+                        case "Army":
+                            MockrunEvent = "2-mile Run";
+                            break;
+                        case "Marines":
+                            MockrunEvent = "3-mile Run";
+                            break;
+                        case "Navy":
+                        case "Coast Guard":
+                        case "Air Force":
+                        case "Space Force":
+                        default:
+                            MockrunEvent = "1.5-mile Run";
+                            break;
                     }
 
-                    forecastLive.postValue(result);
-                });
+                    scoreRepo.getForBranchEvent(user.getBranch(), "Push-ups", pushupHistory -> {
+                        scoreRepo.getForBranchEvent(user.getBranch(), "Plank", plankHistory -> {
+                            scoreRepo.getForBranchEvent(user.getBranch(), MockrunEvent, cardioHistory -> {
+                                ForecastResult mockResult = engine.forecastMockPRT(user, pushupHistory, plankHistory, cardioHistory);
+                                forecastLive.postValue(mockResult);
+                            });
+                        });
+                    });
+
             }
         });
     }

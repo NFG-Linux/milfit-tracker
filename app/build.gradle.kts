@@ -63,6 +63,8 @@ dependencies {
     implementation ("androidx.camera:camera-view:1.4.0")
     implementation ("androidx.camera:camera-extensions:1.4.0")
     implementation ("androidx.concurrent:concurrent-futures:1.3.0")
+    //thumbnail rotation
+    implementation ("androidx.exifinterface:exifinterface:1.3.6")
     //OLS (forecasting)
     implementation ("org.apache.commons:commons-math3:3.6.1")
     //Chart Library

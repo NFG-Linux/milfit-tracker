@@ -11,27 +11,29 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import java.util.Locale;
 import com.example.milfittracker.R;
 import com.example.milfittracker.forecasting.ForecastingViewModel;
 import com.example.milfittracker.forecasting.ForecastingViewModelFactory;
 import com.example.milfittracker.helpers.ScoreProjection;
+import com.example.milfittracker.helpers.FormatTime;
 import com.example.milfittracker.repo.ScoreRepo;
 import com.example.milfittracker.repo.UserRepo;
 import com.example.milfittracker.room.MilFitDB;
 
 public class ForecastingFragment extends Fragment {
     private LinearLayout projectionsContainer;
-    private TextView forecastTxt;
-    private Button runForecast;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,@Nullable ViewGroup container,@Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_forecasting, container, false);
 
-        forecastTxt = view.findViewById(R.id.forecast_text);
         projectionsContainer = view.findViewById(R.id.projections_container);
-        runForecast = view.findViewById(R.id.btn_run_forecast);
+        Button pushupFC = view.findViewById(R.id.btn_pushup_forecast);
+        Button plankFC = view.findViewById(R.id.btn_plank_forecast);
+        Button cardioFC = view.findViewById(R.id.btn_cardio_forecast);
+        Button prtFC = view.findViewById(R.id.btn_prt_forecast);
+
+        TextView forecastTxt = view.findViewById(R.id.forecast_txt);
 
         MilFitDB db = MilFitDB.getInstance(requireContext());
         ScoreRepo scoreRepo = new ScoreRepo(db);
@@ -44,47 +46,45 @@ public class ForecastingFragment extends Fragment {
                 .get(ForecastingViewModel.class);
 
         vm.getForecastLive().observe(getViewLifecycleOwner(), result -> {
-            if (result != null) {
-                String display = result.getMessage() != null
-                        ? result.getMessage()
-                        : "Forecast ready";
-                forecastTxt.setText(display);
+            projectionsContainer.removeAllViews();
 
-                projectionsContainer.removeAllViews();
+            String display = result.getMessage() != null
+                    ? result.getMessage()
+                    : "Forecast ready";
+            forecastTxt.setText(display);
 
-                if (result.getProjections() != null) {
-                    for (String event : result.getProjections().keySet()) {
-                        ScoreProjection proj = result.getProjections().get(event);
-
-                        String valueText;
-                        String unit = proj.getUnit();
-
-                        if (event.equalsIgnoreCase("Plank") || event.contains("Run")) {
-                            valueText = formatSeconds(proj.getProjectedValue());
-                            unit = "mins";
-                        } else {
-                            valueText = String.valueOf(proj.getProjectedValue());
-                        }
-
-                        TextView tv = new TextView(requireContext());
-                        tv.setText(event + ": " + valueText + " " + unit);
-                        tv.setTextSize(16f);
-                        tv.setPadding(8, 8, 8, 8);
-
-                        projectionsContainer.addView(tv);
+            if (result.getProjections() != null) {
+                for (String event : result.getProjections().keySet()) {
+                    ScoreProjection proj = result.getProjections().get(event);
+                    if (proj == null) {
+                        continue;
                     }
+
+                    String valueText;
+                    String unit = proj.getUnit();
+
+                    if (event.equalsIgnoreCase("Plank") || event.contains("Run")) {
+                        valueText = FormatTime.formatSeconds(proj.getProjectedValue());
+                    } else {
+                        valueText = String.valueOf(proj.getProjectedValue());
+                    }
+
+                    TextView tView = new TextView(requireContext());
+
+                    tView.setText(event + ": " + valueText + " " + unit);
+                    tView.setTextSize(16f);
+                    tView.setPadding(8, 8, 8, 8);
+
+                    projectionsContainer.addView(tView);
                 }
             }
         });
 
-        runForecast.setOnClickListener(v -> vm.runForecast());
+        pushupFC.setOnClickListener(v -> vm.runForecast("Pushups"));
+        plankFC.setOnClickListener(v -> vm.runForecast("Plank"));
+        cardioFC.setOnClickListener(v -> vm.runForecast("Cardio"));
+        prtFC.setOnClickListener(v -> vm.runForecast("MockPRT"));
 
         return view;
-    }
-
-    private String formatSeconds(int secs) {
-        int m = secs / 60;
-        int s = secs % 60;
-        return String.format(Locale.US, "%d:%02d", m, s);
     }
 }

@@ -7,6 +7,16 @@
             android:summary="Name, DoB, Gender"/>
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Branch">
+        <ListPreference
+            android:key="branch_key"
+            android:title="Branch"
+            android:summary="Change Branch to Predict Against"
+            android:entries="@array/branches_entries"
+            android:entryValues="@array/branches_values"
+            android:defaultValue="Navy"/>
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Units and Display">
         <ListPreference
             android:key="units_key"
@@ -56,5 +66,9 @@
         <Preference
             android:key="about"
             android:title="About"/>
+        <Preference
+            android:key="spacer"
+            android:layout="@layout/spacer"
+            android:selectable="false" />
     </PreferenceCategory>
 </androidx.preference.PreferenceScreen>

@@ -15,86 +15,166 @@
             android:id="@+id/Goals"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Set goals for Navy PRT" />
+            android:text="Set goals for Navy PRT"
+            android:textColor="@color/black"/>
 
         <Button
             android:id="@+id/Standards"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Standards" />
+            android:text="Standards"
+            android:textColor="@color/black"/>
 
         <LinearLayout
-            android:id="@+id/cardLast"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:orientation="vertical"
-            android:padding="12dp"
-            android:background="#EEEEEE">
+            android:padding="16dp"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:text="Push-ups"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"/>
+
+                <Button
+                    android:id="@+id/pushup_practice"
+                    android:text="Practice"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/LastHdr"
+                android:id="@+id/pushup_target"
+                android:text="Target: -"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Last PRT"
-                android:textStyle="bold"
-                android:textSize="16sp" />
+                android:layout_marginTop="4dp"/>
 
             <TextView
-                android:id="@+id/LastScore"
+                android:id="@+id/pushup_last"
+                android:text="Last: -"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="—" />
-
-            <TextView
-                android:id="@+id/LastDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="—" />
+                android:layout_marginBottom="8dp"/>
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Events"
-            android:textStyle="bold" />
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="Plank"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+
+                <Button
+                    android:id="@+id/plank_practice"
+                    android:text="Practice"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/plank_target"
+                android:text="Target: -"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:id="@+id/plank_last"
+                android:text="Last: -"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"/>
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="8dp">
+            android:padding="16dp"
+            android:layout_marginBottom="12dp">
 
-            <Button
-                android:id="@+id/Run"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="1.5-mile Run" />
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/Pushups"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Push-ups" />
+                <TextView
+                    android:text="1.5-mile Run"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_weight="1"
+                    android:textColor="@color/black"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
 
-            <Button
-                android:id="@+id/Plank"
-                android:layout_width="match_parent"
+                <Button
+                    android:id="@+id/run_practice"
+                    android:text="Practice"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/run_target"
+                android:text="Target: -"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Plank" />
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:id="@+id/run_last"
+                android:text="Last: -"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"/>
+
         </LinearLayout>
 
         <Button
-            android:id="@+id/Mock"
+            android:id="@+id/start_full_mock"
+            android:text="Start Full Mock"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Start Mock PRT" />
+            android:textColor="@color/black"/>
 
+        <TextView
+            android:text="Runs all 3 events in order and saves as one session"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:textSize="12sp"/>
     </LinearLayout>
 </ScrollView>

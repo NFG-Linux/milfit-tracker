@@ -11,8 +11,16 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/white"
         android:layout_gravity="center"
+        android:text="Take Progress Pic"
+        android:textColor="@color/black"
         android:src="@drawable/ic_camera"
         android:padding="12dp"/>
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/pView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_margin="8dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/photo_recycler"

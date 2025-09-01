@@ -11,15 +11,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import java.util.List;
-import java.util.Locale;
-import com.example.milfittracker.helpers.AppExec;
 import com.example.milfittracker.R;
+import com.example.milfittracker.helpers.AppExec;
 import com.example.milfittracker.repo.ScoreRepo;
+import com.example.milfittracker.repo.UserRepo;
 import com.example.milfittracker.room.MilFitDB;
 import com.example.milfittracker.room.Scores;
+import com.example.milfittracker.room.User;
 import com.example.milfittracker.ui.onboarding.OnboardingActivity;
 
 public class MoreFragment extends PreferenceFragmentCompat {
@@ -33,20 +33,64 @@ public class MoreFragment extends PreferenceFragmentCompat {
         Context ctx = requireContext().getApplicationContext();
         scoreRepo = new ScoreRepo(MilFitDB.getInstance(ctx));
 
-        // Profile
         findPreference("edit_profile").setOnPreferenceClickListener(p -> {
             startActivity(new Intent(requireContext(), OnboardingActivity.class));
             return true;
         });
 
+        ListPreference branchPref = findPreference("branch_key");
+        if (branchPref != null) {
+            branchPref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
+            Context context = requireContext().getApplicationContext();
+            UserRepo userRepo = new UserRepo(MilFitDB.getInstance(context));
+
+            AppExec.getInstance().execute(() -> {
+                User u = userRepo.getUserSync();
+                if (u != null) {
+                    AppExec.getInstance().main(() -> branchPref.setValue(u.getBranch()));
+                }
+            });
+
+            branchPref.setOnPreferenceChangeListener((pref, newValue) -> {
+                String branch = String.valueOf(newValue);
+                AppExec.getInstance().execute(() -> {
+                    User u = userRepo.getUserSync();
+                    if (u != null) {
+                        userRepo.updateBranch(u.getId(), branch);
+                    }
+                });
+                return true;
+            });
+        }
+
         ListPreference units = findPreference("units_key");
         if (units != null) units.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
-        // Altitude mode
         ListPreference altitude = findPreference("altitude_key");
-        if (altitude != null) altitude.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+        if (altitude != null) {
+            altitude.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
-        // Theme
+            Context context = requireContext().getApplicationContext();
+            UserRepo userRepo = new UserRepo(MilFitDB.getInstance(context));
+
+            AppExec.getInstance().execute(() -> {
+                User u = userRepo.getUserSync();
+                if (u != null) {
+                    AppExec.getInstance().main(() -> altitude.setValue(u.getAltitude()));
+                }
+            });
+
+            altitude.setOnPreferenceChangeListener((pref, newValue) -> {
+                String alt = String.valueOf(newValue);
+                AppExec.getInstance().execute(() -> {
+                    User u = userRepo.getUserSync();
+                    if (u != null) userRepo.updateAltitude(u.getId(), alt);
+                });
+                return true;
+            });
+        }
+
         ListPreference theme = findPreference("theme_key");
         if (theme != null) {
             theme.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
@@ -95,7 +139,6 @@ public class MoreFragment extends PreferenceFragmentCompat {
             return true;
         });
 
-        // About (simple toast stub—you can show a dialog)
         findPreference("about").setOnPreferenceClickListener(p -> {
             Toast.makeText(requireContext(),
                     "MilFit Tracker v0.1 • © 2025", Toast.LENGTH_LONG).show();
@@ -104,7 +147,6 @@ public class MoreFragment extends PreferenceFragmentCompat {
     }
 
     private void exportCsv() {
-        // Fetch on background; share on main
         scoreRepo.getAll(list -> {
             if (list == null || list.isEmpty()) {
                 Toast.makeText(requireContext(), "No data to export", Toast.LENGTH_SHORT).show();

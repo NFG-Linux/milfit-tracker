@@ -34,7 +34,7 @@ public class OnboardingFragment extends Fragment {
     private Button PRTButton;
     private Spinner pickBranch;
     private RadioGroup genderGrp;
-    private RadioGroup altiGrp;
+    private RadioGroup alti;
     private Button saveButton;
 
     private String selectedDob;
@@ -60,7 +60,7 @@ public class OnboardingFragment extends Fragment {
         PRTButton = v.findViewById(R.id.button_prt);
         pickBranch = v.findViewById(R.id.branches);
         genderGrp   = v.findViewById(R.id.grp_gender);
-        altiGrp = v.findViewById(R.id.grp_alti);
+        alti = v.findViewById(R.id.grp_alti);
         saveButton    = v.findViewById(R.id.button_save);
 
         userRepo = new UserRepo(MilFitDB.getInstance(requireContext().getApplicationContext()));
@@ -155,13 +155,13 @@ public class OnboardingFragment extends Fragment {
         RadioButton genderBtn = genderGrp.findViewById(genderId);
         String gender = genderBtn.getText().toString();
 
-        int altId = altiGrp.getCheckedRadioButtonId();
+        int altId = alti.getCheckedRadioButtonId();
         if (altId == View.NO_ID) {
             Toast.makeText(requireContext(), "Select altitude group", Toast.LENGTH_SHORT).show();
             return;
         }
-        RadioButton altBtn = altiGrp.findViewById(altId);
-        String altitudeGroupValue = altBtn.getText().toString(); // "< 5000 ft" / "≥ 5000 ft"
+        RadioButton altBtn = alti.findViewById(altId);
+        String altitudeValue = altBtn.getText().toString(); // "< 5000 ft" / "≥ 5000 ft"
 
         User user = new User();
         user.setName(name);
@@ -169,7 +169,7 @@ public class OnboardingFragment extends Fragment {
         user.setPRT(selectedPRT);
         user.setBranch(selectedBranch);
         user.setGender(gender);
-        user.setAltiGrp(altitudeGroupValue);
+        user.setAltitude(altitudeValue);
 
         saveButton.setEnabled(false);
         userRepo.save(user, id -> {

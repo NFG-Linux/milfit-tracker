@@ -18,21 +18,20 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.time.LocalDate;
 import com.example.milfittracker.R;
-import com.example.milfittracker.repo.UserRepo;
 import com.example.milfittracker.room.MilFitDB;
 import com.example.milfittracker.room.Scores;
 import com.example.milfittracker.ui.log.ScoreViewModel;
 import com.example.milfittracker.room.SetGoal;
 import com.example.milfittracker.repo.SetGoalRepo;
+import com.example.milfittracker.repo.UserRepo;
 import com.example.milfittracker.helpers.FormatTime;
 
 public class airForceFragment extends Fragment {
 
-    private ScoreViewModel vm;
     private TextView pushupTarget, pushupLast;
     private TextView plankTarget, plankLast;
     private TextView runTarget, runLast;
@@ -94,7 +93,7 @@ public class airForceFragment extends Fragment {
             navController.navigate(R.id.airforce_to_stopwatch, args);
         });
 
-        vm = new ViewModelProvider(requireActivity()).get(ScoreViewModel.class);
+        ScoreViewModel vm = new ViewModelProvider(requireActivity()).get(ScoreViewModel.class);
 
         new SetGoalRepo(requireContext()).getAllLive().observe(
                 getViewLifecycleOwner(), goals -> {
@@ -116,13 +115,13 @@ public class airForceFragment extends Fragment {
                 });
 
         vm.getAllLive().observe(getViewLifecycleOwner(), list -> {
-            Scores latestPush = latestForBranch(list, "Air Force", "Push-ups");
+            Scores latestPush = latestForBranch(list, "Push-ups", "Air Force");
             if (latestPush != null) pushupLast.setText("Last: " + latestPush.getEventValue());
 
-            Scores latestPlank = latestForBranch(list, "Air Force", "Plank");
+            Scores latestPlank = latestForBranch(list, "Plank", "Air Force");
             if (latestPlank != null) plankLast.setText("Last: " + FormatTime.formatSeconds(latestPlank.getEventValue()));
 
-            Scores latestRun = latestForBranch(list, "Air Force", "1.5-mile Run");
+            Scores latestRun = latestForBranch(list, "1.5-mile Run", "Air Force");
             if (latestRun != null) runLast.setText("Last: " + FormatTime.formatSeconds(latestRun.getEventValue()));
         });
 
@@ -132,7 +131,6 @@ public class airForceFragment extends Fragment {
             NavController navController = Navigation.findNavController(vw);
             navController.navigate(R.id.airforce_to_standards, args);
         });
-
 
         btnGoals.setOnClickListener(vw2 -> showGoalDialog());
 
@@ -183,44 +181,6 @@ public class airForceFragment extends Fragment {
                 .show();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void saveScore(String branch, String event, int value, String unit) {
-        MilFitDB db = MilFitDB.getInstance(requireContext());
-        UserRepo userRepo = new UserRepo(db);
-
-        userRepo.getUser(user -> {
-            if (user == null) {
-                Toast.makeText(requireContext(), "No user profile found", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            Scores s = new Scores();
-            s.setBranch(branch);
-            s.setEvent(event);
-            s.setGender(user.getGender());
-
-            int age = 0;
-            try {
-                if (user.getBDay() != null) {
-                    java.time.LocalDate birth = java.time.LocalDate.parse(user.getBDay());
-                    age = java.time.Period.between(birth, java.time.LocalDate.now()).getYears();
-                }
-            } catch (Exception ignored) {
-            }
-
-            s.setAge(age);
-            s.setEventValue(value);
-            s.setUnit(unit);
-            s.setDate(LocalDate.now().toString());
-
-            new ViewModelProvider(requireActivity())
-                    .get(com.example.milfittracker.ui.log.ScoreViewModel.class)
-                    .insert(s);
-
-            Toast.makeText(getContext(), "Saved " + event, android.widget.Toast.LENGTH_SHORT).show();
-        });
-    }
-
     //helpers
     private int parseMmSs(String string) {
         if (string == null || !string.contains(":")) return -1;
@@ -235,7 +195,7 @@ public class airForceFragment extends Fragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private Scores latestForBranch(List<Scores> list, String branch, String event) {
+    private Scores latestForBranch(List<Scores> list, String event, String branch) {
         if (list == null || list.isEmpty()) return null;
         return list.stream()
                 .filter(s -> branch.equalsIgnoreCase(s.getBranch()) && event.equalsIgnoreCase(s.getEvent()))

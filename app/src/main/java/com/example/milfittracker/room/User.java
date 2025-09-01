@@ -21,14 +21,14 @@ public class User {
     @ColumnInfo(name = "PRT Date")
     private String PRT;
 
-    @ColumnInfo(name = "Branch")
+    @ColumnInfo(name = "branch")
     private String branch;
 
     @ColumnInfo(name = "gender")
     private String gender;
 
-    @ColumnInfo(name = "altitude_group")
-    private String altiGrp;
+    @ColumnInfo(name = "altitude")
+    private String altitude;
 
     public long getId() { return id; }
     public void setId(long id) { this.id = id; }
@@ -48,6 +48,6 @@ public class User {
     public String getGender() { return gender; }
     public void setGender(String gender) { this.gender = gender; }
 
-    public String getAltiGrp() { return altiGrp; }
-    public void setAltiGrp(String altiGrp) { this.altiGrp = altiGrp; }
+    public String getAltitude() { return altitude; }
+    public void setAltitude(String altitude) { this.altitude = altitude; }
 }

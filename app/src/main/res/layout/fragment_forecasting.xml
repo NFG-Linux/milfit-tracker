@@ -5,30 +5,47 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <Button
+        android:id="@+id/btn_pushup_forecast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pushup Prediction"
+        android:textColor="@color/black"/>
+
+    <Button
+        android:id="@+id/btn_plank_forecast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Plank Prediction"
+        android:textColor="@color/black"/>
+
+    <Button
+        android:id="@+id/btn_cardio_forecast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cardio Prediction"
+        android:textColor="@color/black"/>
+
+    <Button
+        android:id="@+id/btn_prt_forecast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mock PRT Prediction"
+        android:textColor="@color/black"/>
+
     <TextView
-        android:id="@+id/forecast_text"
+        android:id="@+id/forecast_txt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Progress Forecasting"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:paddingBottom="12dp"
-        android:background="@color/brand_primary"
-        android:textColor="@color/black"
-        android:gravity="center"
-        android:padding="8dp"/>
+        android:textSize="16sp"
+        android:padding="8dp"
+        android:backgroundTint="@color/brand_primary"
+        android:textColor="@color/black" />
 
     <LinearLayout
         android:id="@+id/projections_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="16dp" />
-
-    <Button
-        android:id="@+id/btn_run_forecast"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Run Forecast"
-        android:textColor="@color/black"/>
+        android:paddingTop="20dp" />
 </LinearLayout>

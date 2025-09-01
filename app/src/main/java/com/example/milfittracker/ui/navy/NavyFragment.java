@@ -1,11 +1,8 @@
 package com.example.milfittracker.ui.navy;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.InputFilter;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import com.example.milfittracker.R;
@@ -30,12 +25,13 @@ import com.example.milfittracker.room.Scores;
 import com.example.milfittracker.ui.log.ScoreViewModel;
 import com.example.milfittracker.room.SetGoal;
 import com.example.milfittracker.repo.SetGoalRepo;
+import com.example.milfittracker.helpers.FormatTime;
 
 public class NavyFragment extends Fragment {
 
-    private ScoreViewModel vm;
-    private TextView LastScore;
-    private TextView LastDate;
+    private TextView pushupTarget, pushupLast;
+    private TextView plankTarget, plankLast;
+    private TextView runTarget, runLast;
 
     @Nullable
     @Override
@@ -45,162 +41,138 @@ public class NavyFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_navy, container, false);
 
-        LastScore = v.findViewById(R.id.LastScore);
-        LastDate  = v.findViewById(R.id.LastDate);
-
         Button btnStandards = v.findViewById(R.id.Standards);
-        Button btnRun       = v.findViewById(R.id.Run);
-        Button btnPush      = v.findViewById(R.id.Pushups);
-        Button btnPlank     = v.findViewById(R.id.Plank);
-        Button btnMock      = v.findViewById(R.id.Mock);
         Button btnGoals     = v.findViewById(R.id.Goals);
 
-        vm = new ViewModelProvider(requireActivity()).get(ScoreViewModel.class);
+        pushupTarget = v.findViewById(R.id.pushup_target);
+        pushupLast = v.findViewById(R.id.pushup_last);
+
+        plankTarget = v.findViewById(R.id.plank_target);
+        plankLast = v.findViewById(R.id.plank_last);
+
+        runTarget = v.findViewById(R.id.run_target);
+        runLast = v.findViewById(R.id.run_last);
+
+        Button pushupPractice = v.findViewById(R.id.pushup_practice);
+        Button plankPractice = v.findViewById(R.id.plank_practice);
+        Button runPractice = v.findViewById(R.id.run_practice);
+        Button startFullMock = v.findViewById(R.id.start_full_mock);
+
+        pushupPractice.setOnClickListener(v1 -> {
+            Bundle args = new Bundle();
+            args.putString("branch", "Navy");
+            args.putString("event", "Push-ups");
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.stopwatchFragment, args);
+        });
+
+        plankPractice.setOnClickListener(v1 -> {
+            Bundle args = new Bundle();
+            args.putString("branch", "Navy");
+            args.putString("event", "Plank");
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.stopwatchFragment, args);
+        });
+
+        runPractice.setOnClickListener(v1 -> {
+            Bundle args = new Bundle();
+            args.putString("branch", "Navy");
+            args.putString("event", "1.5-mile Run");
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.stopwatchFragment, args);
+        });
+
+        startFullMock.setOnClickListener(v1 -> {
+            Bundle args = new Bundle();
+            args.putString("branch", "Navy");
+            args.putBoolean("mock", true);
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.navy_to_stopwatch, args);
+        });
+
+        ScoreViewModel vm = new ViewModelProvider(requireActivity()).get(ScoreViewModel.class);
+
+        new SetGoalRepo(requireContext()).getAllLive().observe(
+                getViewLifecycleOwner(), goals -> {
+                    for (SetGoal g : goals) {
+                        if ("Navy".equalsIgnoreCase(g.getBranch())) {
+                            switch (g.getEvent()) {
+                                case "Push-ups":
+                                    pushupTarget.setText("Target: " + g.getValue());
+                                    break;
+                                case "Plank":
+                                    plankTarget.setText("Target: " + FormatTime.formatSeconds(g.getValue()));
+                                    break;
+                                case "1.5-mile Run":
+                                    runTarget.setText("Target: " + FormatTime.formatSeconds(g.getValue()));
+                                    break;
+                            }
+                        }
+                    }
+                });
 
         vm.getAllLive().observe(getViewLifecycleOwner(), list -> {
-            Scores latest = latestForBranch(list, "Navy");
-            if (latest != null) {
-                LastScore.setText(latest.getEvent() + ": " + latest.getEventValue() + " " + latest.getUnit());
-                LastDate.setText(latest.getDate());
-            } else {
-                LastScore.setText("No entries yet");
-                LastDate.setText("—");
-            }
+            Scores latestPush = latestForBranch(list, "Push-ups", "Navy");
+            if (latestPush != null) pushupLast.setText("Last: " + latestPush.getEventValue());
+
+            Scores latestPlank = latestForBranch(list, "Plank", "Navy");
+            if (latestPlank != null) plankLast.setText("Last: " + FormatTime.formatSeconds(latestPlank.getEventValue()));
+
+            Scores latestRun = latestForBranch(list, "1.5-mile Run", "Navy");
+            if (latestRun != null) runLast.setText("Last: " + FormatTime.formatSeconds(latestRun.getEventValue()));
         });
 
         btnStandards.setOnClickListener(vw -> {
+            Bundle args = new Bundle();
+            args.putString("branch", "Navy");
             NavController navController = Navigation.findNavController(vw);
-            navController.navigate(R.id.pdfViewerFragment);
+            navController.navigate(R.id.navy_to_standards, args);
         });
 
-
-        btnGoals.setOnClickListener(vw ->
-                btnGoals.setOnClickListener(vw2 -> showGoalDialog()));
-
-        btnMock.setOnClickListener(vw -> {
-            NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.navy_to_stopwatch);
-        });
-
-        btnRun.setOnClickListener(vw -> showRunDialog());
-        btnPush.setOnClickListener(vw -> showRepsDialog("Push-ups", "reps"));
-        btnPlank.setOnClickListener(vw -> showTimeDialog("Plank", "sec"));
+        btnGoals.setOnClickListener(vw2 -> showGoalDialog());
 
         return v;
     }
 
     private void showGoalDialog() {
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_set_goal, null);
-        EditText inputValue = dialogView.findViewById(R.id.input_value);
-        EditText inputUnit = dialogView.findViewById(R.id.input_unit);
-        EditText inputEvent = dialogView.findViewById(R.id.input_event);
-        Button dateBtn = dialogView.findViewById(R.id.select_date_btn);
+        View dialogView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.set_goals_navy, null);
 
-        final String[] selectedDate = {null};
-        dateBtn.setOnClickListener(v -> {
-            Calendar c = Calendar.getInstance();
-            new DatePickerDialog(requireContext(), (dp, y, m, d) -> {
-                selectedDate[0] = String.format("%04d-%02d-%02d", y, m + 1, d);
-                dateBtn.setText(selectedDate[0]);
-            }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
-        });
+        EditText inputPushups = dialogView.findViewById(R.id.input_pushups);
+        EditText inputPlank = dialogView.findViewById(R.id.input_plank);
+        EditText inputRun = dialogView.findViewById(R.id.input_run);
 
         new AlertDialog.Builder(requireContext())
-                .setTitle("Set Goal")
+                .setTitle("Set Navy Goals")
                 .setView(dialogView)
                 .setPositiveButton("Save", (d, w) -> {
-                    String event = inputEvent.getText().toString().trim();
-                    String valStr = inputValue.getText().toString().trim();
-                    String unit = inputUnit.getText().toString().trim();
-                    if (event.isEmpty() || valStr.isEmpty() || unit.isEmpty() || selectedDate[0] == null) {
-                        Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
-                        return;
+                    String pushStr = inputPushups.getText().toString().trim();
+                    String plankStr = inputPlank.getText().toString().trim();
+                    String runStr = inputRun.getText().toString().trim();
+
+                    if (!pushStr.isEmpty()) {
+                        int reps = Integer.parseInt(pushStr);
+                        new SetGoalRepo(requireContext())
+                                .save(new SetGoal("Navy", "Push-ups", reps, "reps", null));
                     }
-                    int val = Integer.parseInt(valStr);
 
-                    SetGoal goal = new SetGoal("Navy", event, val, unit, selectedDate[0]);
-                    new SetGoalRepo(requireContext()).save(goal);
-                    Toast.makeText(requireContext(), "Goal saved", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void saveScore(String event, int value, String unit) {
-        Scores s = new Scores();
-        s.setBranch("Navy");
-        s.setEvent(event);
-        s.setGender("Unspecified");
-        s.setAge(0);
-        s.setEventValue(value);
-        s.setUnit(unit);
-        s.setDate(LocalDate.now().toString());
-
-        vm.insert(s);
-        Toast.makeText(requireContext(), "Saved " + event, Toast.LENGTH_SHORT).show();
-    }
-
-    private void showRepsDialog(String title, String unit) {
-        EditText input = new EditText(requireContext());
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setHint("Enter reps");
-        input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
-
-        new AlertDialog.Builder(requireContext())
-                .setTitle(title)
-                .setView(input)
-                .setPositiveButton("Save", (d, w) -> {
-                    String t = input.getText().toString().trim();
-                    if (!t.isEmpty()) {
-                        int reps = Integer.parseInt(t);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            saveScore(title, reps, unit);
+                    if (!plankStr.isEmpty()) {
+                        int secs = parseMmSs(plankStr);
+                        if (secs > 0) {
+                            new SetGoalRepo(requireContext())
+                                    .save(new SetGoal("Navy", "Plank", secs, "sec", null));
                         }
                     }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
 
-    private void showTimeDialog(String title, String unit) {
-        EditText input = new EditText(requireContext());
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setHint("Seconds");
-
-        new AlertDialog.Builder(requireContext())
-                .setTitle(title)
-                .setView(input)
-                .setPositiveButton("Save", (d, w) -> {
-                    String t = input.getText().toString().trim();
-                    if (!t.isEmpty()) {
-                        int secs = Integer.parseInt(t);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            saveScore(title, secs, unit);
+                    if (!runStr.isEmpty()) {
+                        int secs = parseMmSs(runStr);
+                        if (secs > 0) {
+                            new SetGoalRepo(requireContext())
+                                    .save(new SetGoal("Navy", "1.5-mile Run", secs, "sec", null));
                         }
                     }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
 
-    private void showRunDialog() {
-        // Simple mm:ss input -> seconds
-        EditText input = new EditText(requireContext());
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setHint("mm:ss");
-
-        new AlertDialog.Builder(requireContext())
-                .setTitle("1.5-mile Run (mm:ss)")
-                .setView(input)
-                .setPositiveButton("Save", (d, w) -> {
-                    String t = input.getText().toString().trim();
-                    int secs = parseMmSs(t);
-                    if (secs >= 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        saveScore("1.5-mile Run", secs, "sec");
-                    } else {
-                        Toast.makeText(requireContext(), "Format mm:ss", Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(requireContext(), "Goals saved", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
@@ -220,11 +192,11 @@ public class NavyFragment extends Fragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private Scores latestForBranch(List<Scores> list, String branch) {
+    private Scores latestForBranch(List<Scores> list, String event, String branch) {
         if (list == null || list.isEmpty()) return null;
         return list.stream()
-                .filter(s -> branch.equalsIgnoreCase(s.getBranch()))
-                .max(Comparator.comparing(Scores::getDate)) // ISO-8601 works lexically
+                .filter(s -> branch.equalsIgnoreCase(s.getBranch()) && event.equalsIgnoreCase(s.getEvent()))
+                .max(Comparator.comparing(Scores::getDate))
                 .orElse(null);
     }
 }

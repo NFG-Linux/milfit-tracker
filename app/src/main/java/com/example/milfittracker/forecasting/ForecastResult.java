@@ -56,6 +56,10 @@ public class ForecastResult {
         return projections;
     }
 
+    public ScoreProjection getProjections(String event) {
+        return projections.get(event);
+    }
+
     public void addProjection(String label, ScoreProjection proj) {
         projections.put(label, proj);
     }
